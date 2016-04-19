@@ -1,62 +1,123 @@
+#include <assert.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
 #include "NimheP.h"
+#include "VerticeSt.h"
 
-typedef struct Grafoplus{
-    u32 nvertices;
-
+typedef struct Grafo{
+    u32 nvertices; // Número de vertices en el grafo.
+    u32 nlados; // Número de lados en el grafo.
+    u32 ncolores; // Número de colores usados hasta el momento para el coloreo propio.
+    u32* orden_actual; // String del orden del grafo.
+    VerticeSt* vertices;
 } NimheSt;
 
-NimheP NuevoNimhe();
+
 /* La función aloca memoria, inicializa lo que haya que inicializar de una
- * estructura NimheSt y devuelve un puntero a ésta. Ademas lee un grafo desde
- * standard input en el formato especificado al principio de este documento y
- * llena esa estructura NimheSt con esos datos. Observación: como estan
- * haciendo estas cosas al mismo tiempo, al leer la entrada ya sabrán cuantos
- * vértices y lados tiene el grafo antes de tener que leer todos los lados, por
- * lo que pueden eficientar la inicializaci ́on de la estructura.
- * Ademas de cargar el grafo, asigna el “color” 0 a cada vertice para indicar
- * que están todos no coloreados.
- * Como dijimos, la función debe leer desde standard input. En general le
- * daremos de comer una serie de lineas en ese formato, a mano, o bien usaremos
- * en standard input el redireccionador “<” para redireccionar a un archivo que
- * sea de esa forma.
- * En caso de error, la función devolverá un puntero a NULL.
- * (errores posibles pueden ser falla en alocar memoria, pero también que el
- * formato de entrada no sea válido, por ejemplo, que la primera linea sin
- * comentarios no empieze con p o que n∗ ̸= n (ver en el item de formato de
- * entrada que significa esto)
- */
+* estructura NimheSt y devuelve un puntero a ésta. Ademas lee un grafo desde
+* standard input en el formato especificado al principio de este documento y
+* llena esa estructura NimheSt con esos datos. Observación: como estan
+* haciendo estas cosas al mismo tiempo, al leer la entrada ya sabrán cuantos
+* vértices y lados tiene el grafo antes de tener que leer todos los lados, por
+* lo que pueden eficientar la inicializaci ́on de la estructura.
+* Ademas de cargar el grafo, asigna el “color” 0 a cada vertice para indicar
+* que están todos no coloreados.
+* Como dijimos, la función debe leer desde standard input. En general le
+* daremos de comer una serie de lineas en ese formato, a mano, o bien usaremos
+* en standard input el redireccionador “<” para redireccionar a un archivo que
+* sea de esa forma.
+* En caso de error, la función devolverá un puntero a NULL.
+* (errores posibles pueden ser falla en alocar memoria, pero también que el
+* formato de entrada no sea válido, por ejemplo, que la primera linea sin
+* comentarios no empieze con p o que n∗ ̸= n (ver en el item de formato de
+* entrada que significa esto)
+*/
+NimheP NuevoNimhe() {
+    NimheP result = NULL; // result será el grafo resultante.
+    char* input_line = NULL; // Aquí se guardará cada línea leida por stdin.
+    int line_length = 0; // Largo de línea leida.
 
-int DestruirNimhe(NimheP G);
+    while (fgets(input_line, MAX_LINE_LENGTH, stdin) != NULL) {
+
+    }
+
+    result = calloc()
+
+    return (result);
+}
+
 /* Destruye G y libera la memoria alocada.
- * Retorna 1 si todo anduvo bien y 0 si no.
- */
+* Retorna 1 si todo anduvo bien y 0 si no.
+*/
+int DestruirNimhe(NimheP G) {
+    if (G != NULL) {
 
-u32 NumeroDeVertices(NimheP G);
+    }
+
+    return (1);
+}
+
 /* Devuelve el número de vértices del grafo G. */
+u32 NumeroDeVertices(NimheP G) {
+    u32 result = 0;
 
-u32 NumeroDeLados(NimheP G);
+    if (G != NULL) {
+        result = G->nvertices;
+    }
+
+    return (result);
+}
+
 /* Devuelve el número de lados del grafo G. */
+u32 NumeroDeLados(NimheP G) {
+    u32 result = 0;
 
-u32 NumeroVerticesDeColor(NimheP G, u32 i);
+    if (G != NULL) {
+        result = G->nlados;
+    }
+
+    return (result);
+}
+
 /* Retorna el número de vértices de color i.
- * (si i = 0 devuelve el número de vertices no coloreados).
- */
+* (si i = 0 devuelve el número de vertices no coloreados).
+*/
+u32 NumeroVerticesDeColor(NimheP G, u32 i) {
+    u32 result = 0;
 
-u32 ImprimirVerticesDeColor(NimheP G, u32 i);
+    if (G != NULL) {
+        result = G->nvertices_de_color[i];
+    }
+
+    return (result);
+}
+
 /* Imprime una linea que dice “Vertices de Color i:” y a continuacion una lista
- * de los vertices que tienen el color i, separados por comas y con un punto
- * luego del último color.
- * (si i = 0 esta lista será la lista de vertices no coloreados)
- * Por ejemplo: Vertices de Color 3: 15,17,1.
- * Los vertices no tienen porque estar ordenados.
- * Si no hay vertices de color i debe imprimir “No hay vertices de color i”.
- * Retorna el número de vertices de color i.
- */
+* de los vertices que tienen el color i, separados por comas y con un punto
+* luego del último color.
+* (si i = 0 esta lista será la lista de vertices no coloreados)
+* Por ejemplo: Vertices de Color 3: 15,17,1.
+* Los vertices no tienen porque estar ordenados.
+* Si no hay vertices de color i debe imprimir “No hay vertices de color i”.
+* Retorna el número de vertices de color i.
+*/
+u32 ImprimirVerticesDeColor(NimheP G, u32 i) {
 
-u32 CantidadDeColores(NimheP G);
+}
+
 /* Devuelve la cantidad de colores usados en el coloreo de G. */
+u32 CantidadDeColores(NimheP G) {
+    u32 result = 0;
 
-VerticeSt IesimoVerticeEnElOrden(NimheP G,u32 i);
+    if (G != NULL) {
+        result = G->ncolores;
+    }
+
+    return (result);
+}
+
+VerticeSt IesimoVerticeEnElOrden(NimheP G, u32 i);
 /* Devuelve el vértice numero i en el orden guardado en ese momento en G.
  * (el índice 0 indica el primer vértice, el índice 1 el segundo, etc).
  */

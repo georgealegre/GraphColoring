@@ -5,9 +5,11 @@
 
 #include "VerticeSt.h"
 
+#define MAX_LINE_LENGTH 80
+
 typedef u32 uint32_t;
 
-typedef struct NimheSt *NimheP;
+typedef NimheSt *NimheP;
 
 NimheP NuevoNimhe();
 /* La función aloca memoria, inicializa lo que haya que inicializar de una
