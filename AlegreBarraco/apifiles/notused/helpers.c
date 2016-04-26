@@ -36,13 +36,23 @@ char* readline_from_stdin() {
 
 par_t handle_p_line(char* line) {
     assert(line != NULL);
-    char* subline = NULL, *ptr = NULL;
-    int i = 0, j = 0;
-    bool es_num = true;
+    char* subline = NULL; // Usada para guardar cada substring de la línea.
+    char* ptr = NULL; // Necesaria para strtoul().
+    int i = 0; /* Índice del substring de "line". Si llega a 4, línea ...
+    no tiene formato requerido. */
+    int char_i = 0; // Índice de los caracteres en "subline".
+    bool es_num = true; // Si true, subline es un número.
+    par_t par = NULL; // n vértices y m lados serán guardados en par.
 
-    par_t par = calloc(1, sizeof(struct _par_t));
+    par = calloc(1, sizeof(struct _par_t));
     assert(par != NULL);
 
+    /* Si en algún momento, uno de los 4 substrings de la línea no respeta su
+     * formato requerido, par se libera y se la setea a NULL para que deje de
+     * buscar.
+     * i empieza en 0. Por cada substring, se aumenta en 1. Si llega a 4
+     * y strsep no devuelve NULL, habían más cosas despues del cuarto substring.
+     */
     while (par != NULL && i < 5 && (subline = strsep(&line, " ")) != NULL) {
         switch (i) {
             case 0:
@@ -63,10 +73,10 @@ par_t handle_p_line(char* line) {
             case 2:
                 // "subline" será un número.
                 // Revisar que solo sea un número.
-                j = 0;
-                while (es_num && j < strlen(subline)) {
-                    es_num = es_num && isdigit(subline[j]);
-                    j++;
+                char_i = 0;
+                while (es_num && char_i < strlen(subline)) {
+                    es_num = es_num && isdigit(subline[char_i]);
+                    char_i++;
                 }
                 if (es_num) {
                     par->l = strtoul(subline, &ptr, 10);
@@ -78,10 +88,10 @@ par_t handle_p_line(char* line) {
             case 3:
                 // "subline" será un número.
                 // Revisar que solo sea un número.
-                j = 0;
-                while (es_num && j < strlen(subline)) {
-                    es_num = es_num && isdigit(subline[j]);
-                    j++;
+                char_i = 0;
+                while (es_num && char_i < strlen(subline)) {
+                    es_num = es_num && isdigit(subline[char_i]);
+                    char_i++;
                 }
                 if (es_num) {
                     par->r = strtoul(subline, &ptr, 10);
@@ -103,18 +113,29 @@ par_t handle_p_line(char* line) {
 
 par_t handle_e_line(char* line) {
     assert(line != NULL);
-    char* subline = NULL, *ptr = NULL;
-    int i = 0, j = 0;
-    bool es_num = true;
+    
+    char* subline = NULL; // Usada para guardar cada substring de la línea.
+    char* ptr = NULL; // Necesaria para strtoul().
+    int i = 0; /* Índice del substring de "line". Si llega a 3, línea ...
+    no tiene formato requerido. */
+    int char_i = 0; // Índice de los caracteres en "subline".
+    bool es_num = true; // Si true, subline es un número.
+    par_t par = NULL; // n vértices y m lados serán guardados en par.
 
-    par_t par = calloc(1, sizeof(struct _par_t));
+    par = calloc(1, sizeof(struct _par_t));
     assert(par != NULL);
 
+    /* Si en algún momento, uno de los 3 substrings de la línea no respeta su
+     * formato requerido, par se libera y se la setea a NULL para que deje de
+     * buscar.
+     * i empieza en 0. Por cada substring, se aumenta en 1. Si llega a 3
+     * y strsep no devuelve NULL, habían más cosas despues del tercer substring.
+     */
     while (par != NULL && i < 4 && (subline = strsep(&line, " ")) != NULL) {
         switch (i) {
             case 0:
                 // "subline" debe ser igual a "e".
-                // strcmp devuelve 0  si strings son iguales.
+                // strcmp devuelve 0 si strings son iguales.
                 if (strcmp(subline, "e") != 0) {
                     free(par);
                     par = NULL;
@@ -123,10 +144,10 @@ par_t handle_e_line(char* line) {
             case 1:
                 // "subline" será un número.
                 // Revisar que solo sea un número.
-                j = 0;
-                while (es_num && j < strlen(subline)) {
-                    es_num = es_num && isdigit(subline[j]);
-                    j++;
+                char_i = 0;
+                while (es_num && char_i < strlen(subline)) {
+                    es_num = es_num && isdigit(subline[char_i]);
+                    char_i++;
                 }
                 if (es_num) {
                     par->l = strtoul(subline, &ptr, 10);
@@ -138,10 +159,10 @@ par_t handle_e_line(char* line) {
             case 2:
                 // "subline" será un número.
                 // Revisar que solo sea un número.
-                j = 0;
-                while (es_num && j < strlen(subline)) {
-                    es_num = es_num && isdigit(subline[j]);
-                    j++;
+                char_i = 0;
+                while (es_num && char_i < strlen(subline)) {
+                    es_num = es_num && isdigit(subline[char_i]);
+                    char_i++;
                 }
                 if (es_num) {
                     par->r = strtoul(subline, &ptr, 10);

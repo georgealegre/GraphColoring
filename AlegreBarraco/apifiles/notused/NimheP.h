@@ -7,7 +7,15 @@
 
 #define MAX_LINE_LENGTH 80
 
-typedef u32 uint32_t;
+typedef uint32_t u32;
+
+struct NimheSt{
+    u32 nvertices; // Número de vertices en el grafo.
+    u32 nlados; // Número de lados en el grafo.
+    u32 ncolores; // Número de colores usados hasta el momento para el coloreo propio.
+    u32* orden_actual; // String del orden del grafo.
+    VerticeSt* vertices;
+};
 
 typedef NimheSt *NimheP;
 

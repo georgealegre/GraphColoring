@@ -3,13 +3,6 @@
 #include "VerticeSt.h"
 #include "NimheP.h"
 
-struct VerticeSt{
-    u32 nombre;
-    u32 grado;
-    u32 color;
-    u32* vecinos;
-};
-
 /* Devuelve el color con el que está coloreado el vértice x.
 * Si el vértice no esta coloreado, devuelve 0.
 */
@@ -39,7 +32,7 @@ u32 NombreDelVertice(VerticeSt x) {
 */
 void ImprimirVecinosDelVertice(VerticeSt x, NimheP G) {
     u32 i = 0; // Iterador de vecinos.
-    struct VerticeSt ivecino; // Iésimo vecino de x.
+    VerticeSt ivecino; // Iésimo vecino de x.
 
     if (G != NULL) {
         printf("\n");

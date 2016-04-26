@@ -26,6 +26,8 @@ par_t handle_p_line(char* line);
  */
 par_t handle_e_line(char* line);
 
+// Devuelve elelemento l del par.
 u32 get_l(par_t par);
 
+// Devuelve elelemento r del par.
 u32 get_r(par_t par);

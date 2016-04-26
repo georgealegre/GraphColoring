@@ -3,6 +3,15 @@
 
 #include "NimheP.h"
 
+struct vertex_t{
+    u32 nombre;
+    u32 grado;
+    u32 color;
+    u32* vecinos;
+};
+
+typedef struct vertex_t VerticeSt;
+
 u32 ColorDelVertice(VerticeSt x);
 /* Devuelve el color con el que está coloreado el vértice x.
  * Si el vértice no esta coloreado, devuelve 0.

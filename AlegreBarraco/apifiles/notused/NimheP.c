@@ -4,15 +4,7 @@
 
 #include "NimheP.h"
 #include "VerticeSt.h"
-
-typedef struct Grafo{
-    u32 nvertices; // Número de vertices en el grafo.
-    u32 nlados; // Número de lados en el grafo.
-    u32 ncolores; // Número de colores usados hasta el momento para el coloreo propio.
-    u32* orden_actual; // String del orden del grafo.
-    VerticeSt* vertices;
-} NimheSt;
-
+#include "helpers.h"
 
 /* La función aloca memoria, inicializa lo que haya que inicializar de una
 * estructura NimheSt y devuelve un puntero a ésta. Ademas lee un grafo desde
@@ -34,17 +26,61 @@ typedef struct Grafo{
 * entrada que significa esto)
 */
 NimheP NuevoNimhe() {
-    NimheP result = NULL; // result será el grafo resultante.
-    char* input_line = NULL; // Aquí se guardará cada línea leida por stdin.
-    int line_length = 0; // Largo de línea leida.
+    char* line = NULL; // Línea leída.
+    char* subline = NULL;
+    char* ptr = NULL;
+    int read = 0; // Cantidad de caracteres leídos.
+    int argc = 0;
+    bool flag = true; // True si seguimos leyendo, false de lo contrario.
+    char* error_lectura = "Error en formato de entrada\n";
+    u32 nvertices = 0, nlados = 0, lvertice = 0, rvertice = 0, nlados_tmp = 0;
+    par_t par = NULL;
 
-    while (fgets(input_line, MAX_LINE_LENGTH, stdin) != NULL) {
-
+    while (flag) {
+        line = readline_from_stdin();
+        if (line == NULL) {
+            flag = false;
+            printf("%s", error_lectura);
+        } else {
+            read = strlen(line);
+            if (read > 0) {
+                if (line[0] == 'p') {
+                    if ((par = handle_p_line(line)) != NULL) {
+                        nvertices = get_l(par);
+                        nlados = get_r(par);
+                        nlados_tmp = nlados;
+                        free(par);
+                        par = NULL;
+                    } else {
+                        flag = false;
+                        printf("%s", error_lectura);
+                    }
+                    printf("Grafo tiene -%u- vertices.\n", nvertices);
+                    printf("Grafo tiene -%u- lados.\n", nlados);
+                } else if (line[0] == 'e') {
+                    if ((par = handle_e_line(line)) != NULL) {
+                        lvertice = get_l(par);
+                        rvertice = get_r(par);
+                        free(par);
+                        par = NULL;
+                    } else {
+                        flag = false;
+                        printf("%s", error_lectura);
+                    }
+                    printf("Vertice izquiero: %u. Vertice derecho: %u.\n", lvertice, rvertice);
+                } else if (line[0] != 'c' || line[1] != ' ') {
+                    flag = false;
+                    printf("%s", error_lectura);
+                }
+            } else if (read == 0) {
+                flag = false;
+            }
+            free(line);
+            line = NULL;
+        }
     }
 
-    result = calloc()
-
-    return (result);
+    return 0;
 }
 
 /* Destruye G y libera la memoria alocada.
