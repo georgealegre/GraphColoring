@@ -4,20 +4,17 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
-#include <stdint.h>
 
+#include "helpers.h"
+#include "pila.h"
+#include "list.h"
 #include "Cthulhu.h"
 
-struct _par_t {
-    u32 l;
-    u32 r;
-};
 
-struct _node_t {
-    u32 nombre;
-    u32 index;
-    list_t next;
-};
+/*
+Ver lo de no tener una lista con los vertices y solo recorrer el grafo hasta
+new vertex position
+*/
 
 struct _vertex_t{
     u32 nombre;
@@ -120,7 +117,7 @@ NimheP NuevoNimhe() {
 
                         // Inicializar arreglo de vértices y vecinos.
                         result->vertices = calloc(result->nvertices, sizeof(struct _vertex_t));
-                        result->vecinos = calloc(result->nvertices, sizeof(struct _node_t));
+                        result->vecinos = calloc(result->nvertices, sizeof(list_t));
                     } else {
                         flag = false;
                         printf("%s", error_lectura);
@@ -132,7 +129,6 @@ NimheP NuevoNimhe() {
                     if ((par = handle_e_line(line)) != NULL) {
                         lvertice = get_l(par);
                         rvertice = get_r(par);
-                        printf("izquierdo: %u - derecho %u.\n", lvertice, rvertice);
                         free(par);
                         par = NULL;
 
@@ -144,6 +140,7 @@ NimheP NuevoNimhe() {
                             result->vertices[pos_vertice_nuevo].nombre = lvertice;
                             result->vertices[pos_vertice_nuevo].grado = 1;
                             result->vertices[pos_vertice_nuevo].color = 0;
+                            result->vecinos[pos_vertice_nuevo] = list_empty();
                             result->vecinos[pos_vertice_nuevo] = list_append(result->vecinos[pos_vertice_nuevo], pos_vertice_nuevo + 1, rvertice);
                             vertices_cargados = list_append(vertices_cargados, pos_vertice_nuevo, lvertice);
 
@@ -152,6 +149,7 @@ NimheP NuevoNimhe() {
                             result->vertices[pos_vertice_nuevo].nombre = rvertice;
                             result->vertices[pos_vertice_nuevo].grado = 1;
                             result->vertices[pos_vertice_nuevo].color = 0;
+                            result->vecinos[pos_vertice_nuevo] = list_empty();
                             result->vecinos[pos_vertice_nuevo] = list_append(result->vecinos[pos_vertice_nuevo], pos_vertice_nuevo - 1, lvertice);
                             vertices_cargados = list_append(vertices_cargados, pos_vertice_nuevo, rvertice);
 
@@ -163,6 +161,7 @@ NimheP NuevoNimhe() {
                             result->vertices[pos_vertice_nuevo].nombre = lvertice;
                             result->vertices[pos_vertice_nuevo].grado = 1;
                             result->vertices[pos_vertice_nuevo].color = 0;
+                            result->vecinos[pos_vertice_nuevo] = list_empty();
                             result->vecinos[pos_vertice_nuevo] = list_append(result->vecinos[pos_vertice_nuevo], pos_rv, rvertice);
                             vertices_cargados = list_append(vertices_cargados, pos_vertice_nuevo, lvertice);
 
@@ -178,6 +177,7 @@ NimheP NuevoNimhe() {
                             result->vertices[pos_vertice_nuevo].nombre = rvertice;
                             result->vertices[pos_vertice_nuevo].grado = 1;
                             result->vertices[pos_vertice_nuevo].color = 0;
+                            result->vecinos[pos_vertice_nuevo] = list_empty();
                             result->vecinos[pos_vertice_nuevo] = list_append(result->vecinos[pos_vertice_nuevo], pos_lv, lvertice);
                             vertices_cargados = list_append(vertices_cargados, pos_vertice_nuevo, rvertice);
 
@@ -213,6 +213,12 @@ NimheP NuevoNimhe() {
                     }
                 }
             } else if (read == 0) {
+                if (nlados_leidos < nlados_tmp) {
+                    printf("%s", error_lectura);
+                    if (!DestruirNimhe(result)) {
+                        printf("Mala destrucción del grafo.\n");
+                    }
+                }
                 flag = false;
             }
             free(line);
@@ -227,7 +233,6 @@ NimheP NuevoNimhe() {
 int DestruirNimhe(NimheP G) {
     int result = 1;
     u32 i = 0; // Iterador para liberar listas de vecinos.
-    u32 j = 0; // Iterador para
 
     if (G != NULL) {
         if (G->vecinos != NULL) {
@@ -320,22 +325,66 @@ u32 CantidadDeColores(NimheP G) {
     return (result);
 }
 
-VerticeSt IesimoVerticeEnElOrden(NimheP G, u32 i){
-    VerticeSt result;
+VerticeSt IesimoVerticeEnElOrden(NimheP G, u32 i);
 
-    return (result);
-}
+VerticeSt IesimoVecino(NimheP G, VerticeSt x, u32 i);
 
-VerticeSt IesimoVecino(NimheP G, VerticeSt x, u32 i) {
-    VerticeSt result;
+void Descolorear(NimheP G) {
+    u32 i = 0;
 
-    return (result);
+    if (G != NULL) {
+        for (i = 0; i < G->nvertices; i++) {
+            G->vertices[i].color = 0;
+        }
+    }
 }
 
 int Chidos(NimheP G) {
-    int result = 0;
+    int result = 1;
+    u32 i = 0; // Iterador de vértices en el grafo.
+    u32 x = 0; // Iterador de vecinos del vértice.
+    u32 nvertices_coloreados = 0; // Cuantos vértices colorie.
+    u32 v; // Posición del vértice sobre el cual trabajaremos.
+    u32 w; // Posición del vecino del "v".
+    pila_t stack = stack_empty();
 
-    
+    Descolorear(G);
+    while (nvertices_coloreados < G->nvertices) {
+        i = 0;
+        while (G->vertices[i].color != 0 && i < G->nvertices) {
+            i++;
+        }
+        G->vertices[i].color = 1;
+        nvertices_coloreados++;
+        stack = stack_push(stack, i); //crear Queue con G->vertices[i] como unico elemento.
+        while (stack_size(stack)) {
+            v = stack_first(stack);
+            stack = stack_pop(stack);
+            for (x = 0; x < G->vertices[v].grado ; x++) {
+                w = list_index(G->vecinos[v], x);
+                if (G->vertices[w].color == 0) {
+                    //push queue (vecino)
+                    stack = stack_push(stack, w);
+                    //color del vecino = 3 - color de v
+                    G->vertices[w].color = 3 - G->vertices[v].color;
+                    nvertices_coloreados++;
+                }
+            }
+        }
+    }
+
+    // Liberar memoria usada por stack.
+    stack = stack_destroy(stack);
+    assert(stack == NULL);
+
+    // Ver que el coloreo sea propio.
+    for (i = 0; i < G->nvertices && result; i++) {
+        for (x = 0; x < G->vertices[i].grado && result; x++) {
+            if (G->vertices[i].color == G->vertices[list_index(G->vecinos[i], x)].color) {
+                result = 0;
+            }
+        }
+    }
 
     return (result);
 }
@@ -355,359 +404,3 @@ void ChicoGrande(NimheP G);
 void Revierte(NimheP G);
 
 void OrdenEspecifico(NimheP G,u32* x);
-
-list_t list_empty() {
-    list_t list = NULL;
-
-    return (list);
-}
-
-u32 list_length(list_t list) {
-    u32 length = 0;
-    list_t aux = list;
-
-    if (aux != NULL) {
-        while (aux != NULL && aux->next != NULL) {
-            aux = aux->next;
-            length++;
-        }
-        length++;
-    }
-
-    return (length);
-}
-
-list_t list_destroy(list_t list) {
-    list_t aux = NULL;
-
-    if (list != NULL) {
-        //Destroy every node but first.
-        while (list->next != NULL) {
-            //While the second node exists.
-            //Make aux point to first node.
-            aux = list;
-            //Make list point to second node.
-            list = aux->next;
-            //Clear first node.
-            aux->next = NULL;
-            free(aux);
-            aux = NULL;
-        }
-
-        //Destroy first node.
-        free(list);
-        list = NULL;
-    }
-
-    assert(list == NULL);
-
-    return (list);
-}
-
-u32 list_search(list_t list, u32 nombre) {
-    list_t aux = list;
-    u32 result = 0;
-    bool encontrado = false;
-
-    while (aux != NULL && !encontrado) {
-        if (nombre == aux->nombre) {
-            result = aux->index;
-            encontrado = true;
-        } else {
-            aux = aux->next;
-        }
-    }
-
-    return (result);
-}
-
-u32 list_exists(list_t list, u32 nombre) {
-    list_t aux = list;
-    bool result = false;
-
-    while (aux != NULL && !result) {
-        if (nombre == aux->nombre) {
-            result = true;
-        } else {
-            aux = aux->next;
-        }
-    }
-
-    return (result);
-}
-
-u32 list_index(list_t list, u32 i) {
-    list_t aux = list;
-    u32 j = 0;
-
-    while (j < i) {
-        aux = aux->next;
-        j++;
-    }
-
-    return (aux->index);
-}
-
-list_t list_append(list_t list, u32 index, u32 nombre) {
-    list_t aux = NULL;
-
-    if (list == NULL) {
-        list = calloc(1, sizeof(struct _node_t));
-        assert(list != NULL);
-        list->index = index;
-        list->nombre = nombre;
-        list->next = NULL;
-    } else {
-        aux = list;
-        while (aux->next != NULL) {
-            aux = aux->next;
-        }
-        aux->next = calloc(1, sizeof(struct _node_t));
-        aux->next->next = NULL;
-        aux->next->index = index;
-        aux->next->nombre = nombre;
-    }
-
-    return (list);
-}
-
-list_t list_remove(list_t list, u32 nombre) {
-    unsigned int length = list_length(list);
-    unsigned int n = 1, i = 1;
-    list_t aux = list;
-    list_t aux1 = list;
-
-    if (list != NULL) {
-        while (n < length && nombre != aux->nombre) {
-            aux = aux->next;
-            n++;
-        }
-        if (n == length && nombre == aux->nombre) {
-            //The last node is the one I want to delete.
-            //I have to destroy and free the last node and set the previous one to null.
-            free(aux);
-            if (length == 1) {
-                list = NULL;
-                return (list);
-            } else {
-                n = 1;
-                aux = list;
-                while (n < (length-1)) {
-                    aux = aux->next;
-                    n++;
-                }
-                aux->next = NULL;
-                aux = NULL;
-            }
-        } else if (n == 1 && length > 1) {
-            //List has more then one entry but I wish to delete the first one.
-            list = aux->next;
-            aux->next = NULL;
-            free(aux);
-            aux = NULL;
-        } else if (nombre == aux->nombre) {
-            //Node I want to remove is in middle of list.
-            while (i < (n-1)) {
-                aux1 = aux1->next;
-                i++;
-            }
-            aux1->next = aux->next;
-            free(aux);
-            aux = NULL;
-            aux1 = NULL;
-        }
-    }
-
-    return (list);
-}
-
-void list_dump(list_t list) {
-    list_t aux = list;
-
-    while (aux != NULL) {
-        if (aux != NULL) {
-            printf("Vertice %u, posicion %u\n", aux->nombre, aux->index);
-        }
-        aux = aux->next;
-    }
-}
-
-char* readline_from_stdin() {
-    char* line = NULL; // String con lectura de stdin.
-
-    // Línea tendrá MAX_LINE_LENGTH caracteres más '\n' más '\0'.
-    line = calloc(MAX_LINE_LENGTH + 2, sizeof(char));
-    assert(line != NULL); // Asegurar que se pudo pedir memoria.
-
-    // Leer de stdin.
-    if (fgets(line, MAX_LINE_LENGTH + 2, stdin) != NULL) {
-        // Si hay un \n en el string, el input fue de tamaño correcto.
-        if (line[strlen(line) - 1] == '\n') {
-            line[strlen(line) - 1] = '\0'; // Eliminar '\n'.
-        } else {
-            // Línea no cumple con formato. Libero memoria y devuelvo NULL.
-            free(line);
-            line = NULL;
-        }
-    }
-
-    return (line);
-}
-
-par_t handle_p_line(char* line) {
-    assert(line != NULL);
-    char* subline = NULL; // Usada para guardar cada substring de la línea.
-    char* ptr = NULL; // Necesaria para strtoul().
-    int i = 0; /* Índice del substring de "line". Si llega a 4, línea ...
-    no tiene formato requerido. */
-    int char_i = 0; // Índice de los caracteres en "subline".
-    bool es_num = true; // Si true, subline es un número.
-    par_t par = NULL; // n vértices y m lados serán guardados en par.
-
-    par = calloc(1, sizeof(struct _par_t));
-    assert(par != NULL);
-
-    /* Si en algún momento, uno de los 4 substrings de la línea no respeta su
-     * formato requerido, par se libera y se la setea a NULL para que deje de
-     * buscar.
-     * i empieza en 0. Por cada substring, se aumenta en 1. Si llega a 4
-     * y strsep no devuelve NULL, habían más cosas despues del cuarto substring.
-     */
-    while (par != NULL && i < 5 && (subline = strsep(&line, " ")) != NULL) {
-        switch (i) {
-            case 0:
-                // "subline" debe ser igual a "p".
-                // strcmp devuelve 0  si strings son iguales.
-                if (strcmp(subline, "p") != 0) {
-                    free(par);
-                    par = NULL;
-                }
-                break;
-            case 1:
-                // "subline" debe ser igual a "edge".
-                if (strcmp(subline, "edge") != 0) {
-                    free(par);
-                    par = NULL;
-                }
-                break;
-            case 2:
-                // "subline" será un número.
-                // Revisar que solo sea un número.
-                char_i = 0;
-                while (es_num && char_i < strlen(subline)) {
-                    es_num = es_num && isdigit(subline[char_i]);
-                    char_i++;
-                }
-                if (es_num) {
-                    par->l = strtoul(subline, &ptr, 10);
-                } else {
-                    free(par);
-                    par = NULL;
-                }
-                break;
-            case 3:
-                // "subline" será un número.
-                // Revisar que solo sea un número.
-                char_i = 0;
-                while (es_num && char_i < strlen(subline)) {
-                    es_num = es_num && isdigit(subline[char_i]);
-                    char_i++;
-                }
-                if (es_num) {
-                    par->r = strtoul(subline, &ptr, 10);
-                } else {
-                    free(par);
-                    par = NULL;
-                }
-                break;
-            default:
-                // i == 4, mal formato.
-                free(par);
-                par = NULL;
-        }
-        i++;
-    }
-
-    return (par);
-}
-
-par_t handle_e_line(char* line) {
-    assert(line != NULL);
-
-    char* subline = NULL; // Usada para guardar cada substring de la línea.
-    char* ptr = NULL; // Necesaria para strtoul().
-    int i = 0; /* Índice del substring de "line". Si llega a 3, línea ...
-    no tiene formato requerido. */
-    int char_i = 0; // Índice de los caracteres en "subline".
-    bool es_num = true; // Si true, subline es un número.
-    par_t par = NULL; // n vértices y m lados serán guardados en par.
-
-    par = calloc(1, sizeof(struct _par_t));
-    assert(par != NULL);
-
-    /* Si en algún momento, uno de los 3 substrings de la línea no respeta su
-     * formato requerido, par se libera y se la setea a NULL para que deje de
-     * buscar.
-     * i empieza en 0. Por cada substring, se aumenta en 1. Si llega a 3
-     * y strsep no devuelve NULL, habían más cosas despues del tercer substring.
-     */
-    while (par != NULL && i < 4 && (subline = strsep(&line, " ")) != NULL) {
-        switch (i) {
-            case 0:
-                // "subline" debe ser igual a "e".
-                // strcmp devuelve 0 si strings son iguales.
-                if (strcmp(subline, "e") != 0) {
-                    free(par);
-                    par = NULL;
-                }
-                break;
-            case 1:
-                // "subline" será un número.
-                // Revisar que solo sea un número.
-                char_i = 0;
-                while (es_num && char_i < strlen(subline)) {
-                    es_num = es_num && isdigit(subline[char_i]);
-                    char_i++;
-                }
-                if (es_num) {
-                    par->l = strtoul(subline, &ptr, 10);
-                } else {
-                    free(par);
-                    par = NULL;
-                }
-                break;
-            case 2:
-                // "subline" será un número.
-                // Revisar que solo sea un número.
-                char_i = 0;
-                while (es_num && char_i < strlen(subline)) {
-                    es_num = es_num && isdigit(subline[char_i]);
-                    char_i++;
-                }
-                if (es_num) {
-                    par->r = strtoul(subline, &ptr, 10);
-                } else {
-                    free(par);
-                    par = NULL;
-                }
-                break;
-            default:
-                // i == 3, mal formato.
-                free(par);
-                par = NULL;
-        }
-        i++;
-    }
-
-    return (par);
-}
-
-u32 get_l(par_t par) {
-    assert(par != NULL);
-    return (par->l);
-}
-
-u32 get_r(par_t par) {
-    assert(par != NULL);
-    return (par->r);
-}

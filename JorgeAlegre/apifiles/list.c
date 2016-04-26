@@ -1,16 +1,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
-#include <stdint.h>
 
 #include "list.h"
-#include "VerticeSt.h"
 
 struct _node_t {
     u32 nombre;
     u32 index;
     list_t next;
 };
+
 
 list_t list_empty() {
     list_t list = NULL;
@@ -60,15 +59,30 @@ list_t list_destroy(list_t list) {
     return (list);
 }
 
-u32 list_search(list_t list, u32 nombre) {
+unsigned int list_search(list_t list, u32 nombre) {
     list_t aux = list;
     u32 result = 0;
     bool encontrado = false;
 
     while (aux != NULL && !encontrado) {
-        if (aux->nombre == aux->index) {
+        if (nombre == aux->nombre) {
             result = aux->index;
             encontrado = true;
+        } else {
+            aux = aux->next;
+        }
+    }
+
+    return (result);
+}
+
+u32 list_exists(list_t list, u32 nombre) {
+    list_t aux = list;
+    bool result = false;
+
+    while (aux != NULL && !result) {
+        if (nombre == aux->nombre) {
+            result = true;
         } else {
             aux = aux->next;
         }
@@ -160,4 +174,15 @@ list_t list_remove(list_t list, u32 nombre) {
     }
 
     return (list);
+}
+
+void list_dump(list_t list) {
+    list_t aux = list;
+
+    while (aux != NULL) {
+        if (aux != NULL) {
+            printf("Vertice %u, posicion %u\n", aux->nombre, aux->index);
+        }
+        aux = aux->next;
+    }
 }

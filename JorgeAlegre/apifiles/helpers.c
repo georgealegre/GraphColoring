@@ -40,7 +40,7 @@ par_t handle_p_line(char* line) {
     char* ptr = NULL; // Necesaria para strtoul().
     int i = 0; /* Índice del substring de "line". Si llega a 4, línea ...
     no tiene formato requerido. */
-    int char_i = 0; // Índice de los caracteres en "subline".
+    unsigned int char_i = 0; // Índice de los caracteres en "subline".
     bool es_num = true; // Si true, subline es un número.
     par_t par = NULL; // n vértices y m lados serán guardados en par.
 
@@ -113,12 +113,12 @@ par_t handle_p_line(char* line) {
 
 par_t handle_e_line(char* line) {
     assert(line != NULL);
-    
+
     char* subline = NULL; // Usada para guardar cada substring de la línea.
     char* ptr = NULL; // Necesaria para strtoul().
     int i = 0; /* Índice del substring de "line". Si llega a 3, línea ...
     no tiene formato requerido. */
-    int char_i = 0; // Índice de los caracteres en "subline".
+    unsigned int char_i = 0; // Índice de los caracteres en "subline".
     bool es_num = true; // Si true, subline es un número.
     par_t par = NULL; // n vértices y m lados serán guardados en par.
 

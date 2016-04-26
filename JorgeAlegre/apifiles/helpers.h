@@ -1,8 +1,7 @@
-#include <stdint.h>
+#include "typedefs.h"
 
 #define MAX_LINE_LENGTH 80
 
-typedef uint32_t u32;
 typedef struct _par_t* par_t;
 
 /* Lee de stdin MAX_LINE_LENGTH caracteres.

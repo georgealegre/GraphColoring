@@ -1,17 +1,11 @@
 #ifndef _LIST_H
 #define _LIST_H
 
+#include "typedefs.h"
 #include <stdio.h>
 #include <stdbool.h>
 
 typedef struct _node_t  *list_t;
-typedef uint32_t u32;
-
-
-/* list_t será una lista de pares. Cada par contendrá como índice el nombre
- * real de un vértice y como resultado, su posicíon en el arreglo de vértices
- * del grafo.
- */
 
 list_t list_empty(void);
 /*
@@ -36,17 +30,12 @@ u32 list_length(list_t list);
  */
 
 u32 list_search(list_t list, u32 nombre);
-/*
- * Return the data associated to the given 'index' in the given 'list',
- * or NULL if the 'index' is not in 'list'.
- *
- * The caller must NOT free the resources allocated for the result when done
- * using it.
- *
- * PRE: 'list' and 'index' are valid instances.
- *
- * POST: the result is NULL, or not NULL and should not be destroyed.
+/* Dado el nombre de un vértice, devuelve la posición de ese vértice en el grafo.
  */
+
+u32 list_exists(list_t list, u32 nombre);
+/* Dado el nombre de un vértice, devuelve true si el vértice existe en la lista de vecinos.
+*/
 
 u32 list_index(list_t list, u32 i);
 /* Útil para recorrer todos los elementos de la lista.
@@ -87,5 +76,7 @@ list_t list_remove(list_t list, u32 nombre);
  * minus one if 'index' existed in 'list'. The elements of the result is
  * the same as the one in 'list' with the entry for 'index' removed.
  */
+
+void list_dump(list_t list);
 
 #endif
