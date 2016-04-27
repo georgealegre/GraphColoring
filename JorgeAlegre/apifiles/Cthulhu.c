@@ -73,26 +73,27 @@ void ImprimirVecinosDelVertice(VerticeSt x, NimheP G) {
 NimheP NuevoNimhe() {
     char* line = NULL; // Línea leída.
     int read = 0; // Cantidad de caracteres leídos.
-    bool flag = true; // True si seguimos leyendo, false de lo contrario.
-    bool existel = false; // True si vértice ya fue procesado.
-    bool exister = false; // True si vértice ya fue procesado.
+    bool leer = true; // True si seguimos leyendo, false de lo contrario.
     char* error_lectura = "Error en formato de entrada\n"; // Mensaje de error.
     u32 lvertice = 0; // Valor temp. del vértice izquierdo (v en "e v w").
     u32 rvertice = 0; // Valor temp. del vértice derecho (w en "e v w").
     u32 nlados_tmp = 1; /* Para saber cuántas veces leer lados de STDIN.
         Empieza con 1 para que el ciclo funcione. */
     u32 nlados_leidos = 0; // Para saber cuántos lados llevo leídos.
+    bool existel = false; // True si vértice izquierdo ya fue procesado.
+    bool exister = false; // True si vértice derecho ya fue procesado.
     u32 pos_rv = 0; // Indica la posición del vértice derecho leído.
     u32 pos_lv = 0; // Indica la posición del vértice izquierdo leído.
+    u32 l = 0; // Iterador para buscar vértice izquierdo en arreglo de vértices.
+    u32 r = 0; // Iterador para buscar vértice derecho en arreglo de vértices.
     par_t par = NULL; // Valores obtenidos de la lectura de cada línea.
     NimheP result = NULL; // Grafo que será devuelto por función.
-    list_t vertices_cargados = list_empty(); // Para saber si ya leí un vértice.
     u32 pos_vertice_nuevo = 0; // Para saber hasta donde insertar vértice nuevo.
 
-    while (flag && nlados_leidos < nlados_tmp) {
+    while (leer && nlados_leidos < nlados_tmp) {
         line = readline_from_stdin();
         if (line == NULL) {
-            flag = false;
+            leer = false;
             printf("%s", error_lectura);
             if (!DestruirNimhe(result)) {
                 printf("Mala destrucción del grafo.\n");
@@ -119,7 +120,7 @@ NimheP NuevoNimhe() {
                         result->vertices = calloc(result->nvertices, sizeof(struct _vertex_t));
                         result->vecinos = calloc(result->nvertices, sizeof(list_t));
                     } else {
-                        flag = false;
+                        leer = false;
                         printf("%s", error_lectura);
                         if (!DestruirNimhe(result)) {
                             printf("Mala destrucción del grafo.\n");
@@ -132,8 +133,19 @@ NimheP NuevoNimhe() {
                         free(par);
                         par = NULL;
 
-                        existel = list_exists(vertices_cargados, lvertice);
-                        exister = list_exists(vertices_cargados, rvertice);
+                        // Agregar comentario
+                        existel = false;
+                        exister = false;
+                        pos_rv = 0;
+                        pos_lv = 0;
+                        for (l = 0; l < pos_vertice_nuevo && !existel; l++) {
+                            existel = (result->vertices[l].nombre == lvertice);
+                            if (existel) pos_lv = l;
+                        }
+                        for (r = 0; r < pos_vertice_nuevo && !exister; r++) {
+                            exister = (result->vertices[r].nombre == rvertice);
+                            if (exister) pos_rv = r;
+                        }
 
                         if (!existel && !exister) {
                             // Ambos vértices son nuevos.
@@ -142,7 +154,6 @@ NimheP NuevoNimhe() {
                             result->vertices[pos_vertice_nuevo].color = 0;
                             result->vecinos[pos_vertice_nuevo] = list_empty();
                             result->vecinos[pos_vertice_nuevo] = list_append(result->vecinos[pos_vertice_nuevo], pos_vertice_nuevo + 1, rvertice);
-                            vertices_cargados = list_append(vertices_cargados, pos_vertice_nuevo, lvertice);
 
                             pos_vertice_nuevo++;
 
@@ -151,19 +162,15 @@ NimheP NuevoNimhe() {
                             result->vertices[pos_vertice_nuevo].color = 0;
                             result->vecinos[pos_vertice_nuevo] = list_empty();
                             result->vecinos[pos_vertice_nuevo] = list_append(result->vecinos[pos_vertice_nuevo], pos_vertice_nuevo - 1, lvertice);
-                            vertices_cargados = list_append(vertices_cargados, pos_vertice_nuevo, rvertice);
 
                             pos_vertice_nuevo++;
                         } else if (!existel && exister) {
                             // Solo cargué derecho
-                            pos_rv = list_search(vertices_cargados, rvertice);
-
                             result->vertices[pos_vertice_nuevo].nombre = lvertice;
                             result->vertices[pos_vertice_nuevo].grado = 1;
                             result->vertices[pos_vertice_nuevo].color = 0;
                             result->vecinos[pos_vertice_nuevo] = list_empty();
                             result->vecinos[pos_vertice_nuevo] = list_append(result->vecinos[pos_vertice_nuevo], pos_rv, rvertice);
-                            vertices_cargados = list_append(vertices_cargados, pos_vertice_nuevo, lvertice);
 
                             // Agregar izquierdo como vecino de derecho.
                             result->vertices[pos_rv].grado++;
@@ -172,14 +179,11 @@ NimheP NuevoNimhe() {
                             pos_vertice_nuevo++;
                         } else if (existel && !exister) {
                             // Solo cargué izquierdo
-                            pos_lv = list_search(vertices_cargados, lvertice);
-
                             result->vertices[pos_vertice_nuevo].nombre = rvertice;
                             result->vertices[pos_vertice_nuevo].grado = 1;
                             result->vertices[pos_vertice_nuevo].color = 0;
                             result->vecinos[pos_vertice_nuevo] = list_empty();
                             result->vecinos[pos_vertice_nuevo] = list_append(result->vecinos[pos_vertice_nuevo], pos_lv, lvertice);
-                            vertices_cargados = list_append(vertices_cargados, pos_vertice_nuevo, rvertice);
 
                             // Agregar derecho como vecino de izquierdo.
                             result->vertices[pos_lv].grado++;
@@ -188,8 +192,6 @@ NimheP NuevoNimhe() {
                             pos_vertice_nuevo++;
                         } else {
                             // Ambos vértices ya existen. Solo setear vecinos.
-                            pos_lv = list_search(vertices_cargados, lvertice);
-                            pos_rv = list_search(vertices_cargados, rvertice);
                             result->vertices[pos_lv].grado++;
                             result->vertices[pos_rv].grado++;
                             result->vecinos[pos_lv] = list_append(result->vecinos[pos_lv], pos_rv, rvertice);
@@ -197,7 +199,7 @@ NimheP NuevoNimhe() {
                         }
                         nlados_leidos++;
                     } else {
-                        flag = false;
+                        leer = false;
                         printf("%s", error_lectura);
                         if (!DestruirNimhe(result)) {
                             printf("Mala destrucción del grafo.\n");
@@ -206,7 +208,7 @@ NimheP NuevoNimhe() {
                 } else if ((line[0] == 'c' && line[1] == ' ') && result == NULL) {
                     // Comentario. No hacer nada.
                 } else {
-                    flag = false;
+                    leer = false;
                     printf("%s", error_lectura);
                     if (!DestruirNimhe(result)) {
                         printf("Mala destrucción del grafo.\n");
@@ -219,13 +221,12 @@ NimheP NuevoNimhe() {
                         printf("Mala destrucción del grafo.\n");
                     }
                 }
-                flag = false;
+                leer = false;
             }
             free(line);
             line = NULL;
         }
     }
-    vertices_cargados = list_destroy(vertices_cargados);
 
     return (result);
 }
