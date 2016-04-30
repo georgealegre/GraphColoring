@@ -11,9 +11,10 @@ all:
 clean:
 	rm $(OB)
 	rm -rf $(OB).dSYM
+	rm massif.*
 
 try:
 	$(OB)
 
 valgrind:
-	valgrind --show-reachable=yes --leak-check=full $(OB)
+	time valgrind --show-reachable=yes --leak-check=full $(OB)

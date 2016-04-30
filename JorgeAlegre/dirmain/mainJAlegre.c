@@ -12,6 +12,9 @@ int main() {
     } else {
         printf("Grafo no es bipartito\n");
     }
+
+    printf("Greedy sobre el grafo: %u\n", Greedy(grafo));
+
     if (DestruirNimhe(grafo)) printf("FIN.\n");
     else printf("Todo mal.\n");
 

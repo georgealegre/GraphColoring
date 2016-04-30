@@ -34,8 +34,18 @@ char* readline_from_stdin() {
     return (line);
 }
 
+char* strcopy(const char* string) {
+    size_t len = strlen(string) + 1;
+    void* new = malloc(len * sizeof(char));
+    assert(new != NULL);
+
+    return (char*)memcpy(new, string, len);
+}
+
 par_t handle_p_line(char* line) {
     assert(line != NULL);
+    char* liberar = NULL;
+    char* copy = NULL; // Copia de "line" para usar strtok().
     char* subline = NULL; // Usada para guardar cada substring de la línea.
     char* ptr = NULL; // Necesaria para strtoul().
     int i = 0; /* Índice del substring de "line". Si llega a 4, línea ...
@@ -47,15 +57,19 @@ par_t handle_p_line(char* line) {
     par = calloc(1, sizeof(struct _par_t));
     assert(par != NULL);
 
+    copy = strcopy(line);
+    liberar = copy;
+
     /* Si en algún momento, uno de los 4 substrings de la línea no respeta su
      * formato requerido, par se libera y se la setea a NULL para que deje de
      * buscar.
      * i empieza en 0. Por cada substring, se aumenta en 1. Si llega a 4
      * y strsep no devuelve NULL, habían más cosas despues del cuarto substring.
      */
-    while (par != NULL && i < 5 && (subline = strsep(&line, " ")) != NULL) {
+    while (par != NULL && i < 5 && (subline = strtok(copy, " ")) != NULL) {
         switch (i) {
             case 0:
+                copy = NULL;
                 // "subline" debe ser igual a "p".
                 // strcmp devuelve 0  si strings son iguales.
                 if (strcmp(subline, "p") != 0) {
@@ -108,12 +122,18 @@ par_t handle_p_line(char* line) {
         i++;
     }
 
+    if (liberar != NULL) {
+        free(liberar);
+        liberar = NULL;
+    }
+
     return (par);
 }
 
 par_t handle_e_line(char* line) {
     assert(line != NULL);
-
+    char* liberar = NULL;
+    char* copy = NULL;
     char* subline = NULL; // Usada para guardar cada substring de la línea.
     char* ptr = NULL; // Necesaria para strtoul().
     int i = 0; /* Índice del substring de "line". Si llega a 3, línea ...
@@ -125,15 +145,19 @@ par_t handle_e_line(char* line) {
     par = calloc(1, sizeof(struct _par_t));
     assert(par != NULL);
 
+    copy = strcopy(line);
+    liberar = copy;
+
     /* Si en algún momento, uno de los 3 substrings de la línea no respeta su
      * formato requerido, par se libera y se la setea a NULL para que deje de
      * buscar.
      * i empieza en 0. Por cada substring, se aumenta en 1. Si llega a 3
      * y strsep no devuelve NULL, habían más cosas despues del tercer substring.
      */
-    while (par != NULL && i < 4 && (subline = strsep(&line, " ")) != NULL) {
+    while (par != NULL && i < 4 && (subline = strtok(copy, " ")) != NULL) {
         switch (i) {
             case 0:
+                copy = NULL;
                 // "subline" debe ser igual a "e".
                 // strcmp devuelve 0 si strings son iguales.
                 if (strcmp(subline, "e") != 0) {
@@ -177,6 +201,11 @@ par_t handle_e_line(char* line) {
                 par = NULL;
         }
         i++;
+    }
+
+    if (liberar != NULL) {
+        free(liberar);
+        liberar = NULL;
     }
 
     return (par);
