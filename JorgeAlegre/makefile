@@ -17,4 +17,4 @@ try:
 	$(OB)
 
 valgrind:
-	time valgrind --show-reachable=yes --leak-check=full $(OB)
+	valgrind --show-reachable=yes --leak-check=full $(OB)

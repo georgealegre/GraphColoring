@@ -10,7 +10,8 @@
 #include "helpers.h"
 #include "pila.h"
 #include "list.h"
-#include "Cthulhu.h"
+#include "graph.h"
+#include "rbtree.h"
 
 
 struct _vertex_t{
@@ -176,197 +177,257 @@ u32 max(u32 a, u32 b) {
     else return a;
 }
 
+NimheP agregar_vertices(NimheP G, u32 lvertice, bool existel, u32 pos_lv, u32 rvertice, bool exister, u32 pos_rv, u32* pos_vertice_nuevo) {
+    if (!existel && !exister) {
+        // Ambos vértices son nuevos.
+
+        G->vertices[*pos_vertice_nuevo].nombre = lvertice;
+        G->vertices[*pos_vertice_nuevo].grado = 1;
+        G->vertices[*pos_vertice_nuevo].color = 0;
+        G->vecinos[*pos_vertice_nuevo] = neighbours_empty();
+        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], *pos_vertice_nuevo + 1, rvertice);
+
+        (*pos_vertice_nuevo)++;
+
+        G->vertices[*pos_vertice_nuevo].nombre = rvertice;
+        G->vertices[*pos_vertice_nuevo].grado = 1;
+        G->vertices[*pos_vertice_nuevo].color = 0;
+        G->vecinos[*pos_vertice_nuevo] = neighbours_empty();
+        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], *pos_vertice_nuevo - 1, lvertice);
+
+        (*pos_vertice_nuevo)++;
+    } else if (!existel && exister) {
+        // Solo cargué derecho
+        G->vertices[*pos_vertice_nuevo].nombre = lvertice;
+        G->vertices[*pos_vertice_nuevo].grado = 1;
+        G->vertices[*pos_vertice_nuevo].color = 0;
+        G->vecinos[*pos_vertice_nuevo] = neighbours_empty();
+        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], pos_rv, rvertice);
+
+        // Agregar izquierdo como vecino de derecho.
+        G->vertices[pos_rv].grado++;
+        G->vecinos[pos_rv] = neighbours_append(G->vecinos[pos_rv], *pos_vertice_nuevo, lvertice);
+
+        (*pos_vertice_nuevo)++;
+    } else if (existel && !exister) {
+        // Solo cargué izquierdo
+        G->vertices[*pos_vertice_nuevo].nombre = rvertice;
+        G->vertices[*pos_vertice_nuevo].grado = 1;
+        G->vertices[*pos_vertice_nuevo].color = 0;
+        G->vecinos[*pos_vertice_nuevo] = neighbours_empty();
+        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], pos_lv, lvertice);
+
+        // Agregar derecho como vecino de izquierdo.
+        G->vertices[pos_lv].grado++;
+        G->vecinos[pos_lv] = neighbours_append(G->vecinos[pos_lv], *pos_vertice_nuevo, rvertice);
+
+        (*pos_vertice_nuevo)++;
+    } else {
+        // Ambos vértices ya existen. Solo setear vecinos.
+        G->vertices[pos_lv].grado++;
+        G->vertices[pos_rv].grado++;
+        G->vecinos[pos_lv] = neighbours_append(G->vecinos[pos_lv], pos_rv, rvertice);
+        G->vecinos[pos_rv] = neighbours_append(G->vecinos[pos_rv], pos_lv, lvertice);
+    }
+
+    return (G);
+}
+
 NimheP NuevoNimhe() {
+    // Grafo.
+    NimheP G = NULL; // Grafo que será devuelto por función.
+    u32 delta_grande = 0; // Delta grande del grafo G.
+    u32 nlados = 0; // Para saber cuántas veces leer lados de STDIN.
+
+    // Proceso de lectura.
     char* line = NULL; // Línea leída.
-    int read = 0; // Cantidad de caracteres leídos.
-    bool leer = true; // True si seguimos leyendo, false de lo contrario.
     char* error_lectura = "Error en formato de entrada\n"; // Mensaje de error.
-    u32 lvertice = 0; // Valor temp. del vértice izquierdo (v en "e v w").
-    u32 rvertice = 0; // Valor temp. del vértice derecho (w en "e v w").
-    u32 nlados_tmp = 1; /* Para saber cuántas veces leer lados de STDIN.
-        Empieza con 1 para que el ciclo funcione. */
     u32 nlados_leidos = 0; // Para saber cuántos lados llevo leídos.
+    
+    // ¿Existe el vértice?
+    rb_tree_t tree = NULL; // Arbol con vértices que leo.
     bool existel = false; // True si vértice izquierdo ya fue procesado.
     bool exister = false; // True si vértice derecho ya fue procesado.
     u32 pos_rv = 0; // Indica la posición del vértice derecho leído.
     u32 pos_lv = 0; // Indica la posición del vértice izquierdo leído.
-    u32 l = 0; // Iterador para buscar vértice izquierdo en arreglo de vértices.
-    u32 r = 0; // Iterador para buscar vértice derecho en arreglo de vértices.
+    u32 lvertice = 0; // Valor temp. del vértice izquierdo (v en "e v w").
+    u32 rvertice = 0; // Valor temp. del vértice derecho (w en "e v w").
     par_t par = NULL; // Valores obtenidos de la lectura de cada línea.
-    NimheP result = NULL; // Grafo que será devuelto por función.
     u32 pos_vertice_nuevo = 0; // Para saber hasta donde insertar vértice nuevo.
     u32 i = 0; // Para inicializar estructura de vecinos de vértices.
-    u32 delta_grande = 0;
-
+    
+    // Para guardar la hora de inicio.
     clock_t start;
-
     start = clock();
-    while (leer && nlados_leidos < nlados_tmp) {
-        line = readline_from_stdin();
-        printf("%s\n", line);
-        if (line == NULL) {
-            leer = false;
-            printf("Readline devolvio NULL %s", error_lectura);
-            if (!DestruirNimhe(result)) {
-                printf("Mala destrucción del grafo.\n");
+
+    // Primero descartamos líneas de comentario, si existen.
+    for (;;) {
+        if ((line = readline_from_stdin()) != NULL) {
+            if (line[0] != 'c') {
+                // Dejo línea lista para ser procesada por siguiente bloque.
+                break;
+            }
+            free(line);
+            line = NULL;
+        } else {
+            printf("%s", error_lectura);
+            return NULL;
+        }
+    }
+
+    // Después, procesamos línea "p edge n m".
+    if (line != NULL) {
+        if (line[0] == 'p') {
+            if ((par = handle_p_line(line)) != NULL) {
+                // Inicializamos grafo.
+                G = calloc(1, sizeof(struct NimheSt));
+                assert(G != NULL);
+
+                // Obtengo datos leídos de línea.
+                G->nvertices = get_l(par);
+                G->nlados = get_r(par);
+                nlados = get_r(par);
+                G->ncolores = 0;
+
+                // Ya terminé de usar datos de línea leída
+                free(par);
+                par = NULL;
+
+                // Inicializar arreglo de vértices y vecinos.
+                G->vertices = calloc(G->nvertices, sizeof(struct _vertex_t));
+                assert(G->vertices != NULL);
+                G->vecinos = calloc(G->nvertices, sizeof(neighbours_t));
+                assert(G->vecinos != NULL);
+
+                // Inicializo árbol de vértices leídos.
+                tree = rb_new();
+            } else {
+                // Línea empieza con 'p' pero no está bien formateada.
+                free(line);
+                line = NULL;
+                printf("%s", error_lectura);
+                return NULL;
             }
         } else {
-            read = strlen(line);
-            if (read > 0) {
-                if (line[0] == 'p' && result == NULL) {
-                    // Si grafo ya está inicializado, ya leí línea con "p".
-                    if ((par = handle_p_line(line)) != NULL) {
-                        result = calloc(1, sizeof(struct NimheSt));
+            // Siguiente línea despues de comentarios no empieza con 'p'.
+            free(line);
+            line = NULL;
+            printf("%s", error_lectura);
+            return NULL;
+        }
+        free(line);
+        line = NULL;
+    }
 
-                        // Obtengo datos leídos de línea.
-                        result->nvertices = get_l(par);
-                        result->nlados = get_r(par);
-                        nlados_tmp = get_r(par);
-                        result->ncolores = 0;
-
-                        // Ya terminé de usar datos de línea leída
-                        free(par);
-                        par = NULL;
-
-                        // Inicializar arreglo de vértices y vecinos.
-                        result->vertices = calloc(result->nvertices, sizeof(struct _vertex_t));
-                        result->vecinos = calloc(result->nvertices, sizeof(neighbours_t));
-                    } else {
-                        leer = false;
-                        printf("Mala lectura linea p %s", error_lectura);
-                        if (!DestruirNimhe(result)) {
-                            printf("Mala destrucción del grafo.\n");
-                        }
-                    }
-                } else if (line[0] == 'e'  && result != NULL) {
+    // Finalmente, procesamos cada lado del grafo de entrada.
+    if (G != NULL) {
+        while (nlados_leidos < nlados) {
+            if ((line = readline_from_stdin()) != NULL) {
+                if (line[0] == 'e') {
                     if ((par = handle_e_line(line)) != NULL) {
+                        // Obtengo nombre de vértices de línea leída.
                         lvertice = get_l(par);
                         rvertice = get_r(par);
                         free(par);
                         par = NULL;
 
-                        // Agregar comentario
-                        existel = false;
-                        exister = false;
-                        pos_rv = 0;
+                        // Reviso si vértice izquierdo ya existe.
+                        existel = rb_exists(tree, lvertice);
                         pos_lv = 0;
-                        for (l = 0; l < pos_vertice_nuevo && !existel; l++) {
-                            existel = (result->vertices[l].nombre == lvertice);
-                            if (existel) pos_lv = l;
-                        }
-                        for (r = 0; r < pos_vertice_nuevo && !exister; r++) {
-                            exister = (result->vertices[r].nombre == rvertice);
-                            if (exister) pos_rv = r;
-                        }
-
-                        if (!existel && !exister) {
-                            // Ambos vértices son nuevos.
-                            result->vertices[pos_vertice_nuevo].nombre = lvertice;
-                            result->vertices[pos_vertice_nuevo].grado = 1;
-                            result->vertices[pos_vertice_nuevo].color = 0;
-                            result->vecinos[pos_vertice_nuevo] = neighbours_empty();
-                            result->vecinos[pos_vertice_nuevo] = neighbours_append(result->vecinos[pos_vertice_nuevo], pos_vertice_nuevo + 1, rvertice);
-
-                            pos_vertice_nuevo++;
-
-                            result->vertices[pos_vertice_nuevo].nombre = rvertice;
-                            result->vertices[pos_vertice_nuevo].grado = 1;
-                            result->vertices[pos_vertice_nuevo].color = 0;
-                            result->vecinos[pos_vertice_nuevo] = neighbours_empty();
-                            result->vecinos[pos_vertice_nuevo] = neighbours_append(result->vecinos[pos_vertice_nuevo], pos_vertice_nuevo - 1, lvertice);
-
-                            pos_vertice_nuevo++;
-                        } else if (!existel && exister) {
-                            // Solo cargué derecho
-                            result->vertices[pos_vertice_nuevo].nombre = lvertice;
-                            result->vertices[pos_vertice_nuevo].grado = 1;
-                            result->vertices[pos_vertice_nuevo].color = 0;
-                            result->vecinos[pos_vertice_nuevo] = neighbours_empty();
-                            result->vecinos[pos_vertice_nuevo] = neighbours_append(result->vecinos[pos_vertice_nuevo], pos_rv, rvertice);
-
-                            // Agregar izquierdo como vecino de derecho.
-                            result->vertices[pos_rv].grado++;
-                            result->vecinos[pos_rv] = neighbours_append(result->vecinos[pos_rv], pos_vertice_nuevo, lvertice);
-
-                            pos_vertice_nuevo++;
-                        } else if (existel && !exister) {
-                            // Solo cargué izquierdo
-                            result->vertices[pos_vertice_nuevo].nombre = rvertice;
-                            result->vertices[pos_vertice_nuevo].grado = 1;
-                            result->vertices[pos_vertice_nuevo].color = 0;
-                            result->vecinos[pos_vertice_nuevo] = neighbours_empty();
-                            result->vecinos[pos_vertice_nuevo] = neighbours_append(result->vecinos[pos_vertice_nuevo], pos_lv, lvertice);
-
-                            // Agregar derecho como vecino de izquierdo.
-                            result->vertices[pos_lv].grado++;
-                            result->vecinos[pos_lv] = neighbours_append(result->vecinos[pos_lv], pos_vertice_nuevo, rvertice);
-
-                            pos_vertice_nuevo++;
+                        // Si existe, decime donde.
+                        // Si no existe, agregalo al árbol de vértices junto con su posición.
+                        if (existel) {
+                            pos_lv = rb_search(tree, lvertice);
                         } else {
-                            // Ambos vértices ya existen. Solo setear vecinos.
-                            result->vertices[pos_lv].grado++;
-                            result->vertices[pos_rv].grado++;
-                            result->vecinos[pos_lv] = neighbours_append(result->vecinos[pos_lv], pos_rv, rvertice);
-                            result->vecinos[pos_rv] = neighbours_append(result->vecinos[pos_rv], pos_lv, lvertice);
+                            tree = rb_insert(tree, lvertice, pos_vertice_nuevo);
                         }
+                        
+                        // Reviso si vértice derecho ya existe.
+                        exister = rb_exists(tree, rvertice);
+                        pos_rv = 0;
+                        // Si existe, decime donde.
+                        if (exister) pos_rv = rb_search(tree, rvertice);
+                        // Si no existe, su posición nueva depende de 
+                        // si vértice izquiero es nuevo o no.
+                        else if (existel) tree = rb_insert(tree, rvertice, pos_vertice_nuevo);
+                        else tree = rb_insert(tree, rvertice, pos_vertice_nuevo + 1);
+
+                        // Agrego vértices según corresponda.
+                        G = agregar_vertices(G, 
+                                             lvertice, 
+                                             existel, 
+                                             pos_lv, 
+                                             rvertice, 
+                                             exister, 
+                                             pos_rv, 
+                                             &pos_vertice_nuevo);
                         nlados_leidos++;
+
+                        free(line);
                     } else {
-                        leer = false;
-                        printf("Mala lectura linea e %s", error_lectura);
-                        if (!DestruirNimhe(result)) {
+                        // Me quedan lados por leer pero hubo error de lectura.
+                        printf("%s", error_lectura);
+                        if (!DestruirNimhe(G)) {
                             printf("Mala destrucción del grafo.\n");
                         }
+                        free(line);
+                        line = NULL;
+                        return NULL;
                     }
-                } else if ((result == NULL) && ((read == 1 && line[0] == 'c') || (line[0] == 'c' && line[1] == ' '))) {
-                    // Comentario. No hacer nada.
                 } else {
-                    leer = false;
-                    printf("No entro ni en e, ni en c ni en p. %s", error_lectura);
-                    if (!DestruirNimhe(result)) {
+                    // Me quedan lados por leer pero hubo error de lectura.
+                    printf("%s", error_lectura);
+                    if (!DestruirNimhe(G)) {
                         printf("Mala destrucción del grafo.\n");
                     }
+                    free(line);
+                    line = NULL;
+                    return NULL;
                 }
-            } else if (read == 0) {
-                if (nlados_leidos < nlados_tmp) {
-                    printf("Numero de lados leidos no coincide con numero de lados del archivo %s", error_lectura);
-                    if (!DestruirNimhe(result)) {
-                        printf("Mala destrucción del grafo.\n");
-                    }
+            } else {
+                // Me quedan lados por leer pero hubo error de lectura.
+                printf("%s", error_lectura);
+                if (!DestruirNimhe(G)) {
+                    printf("Mala destrucción del grafo.\n");
                 }
-                leer = false;
+                return NULL;
             }
-            free(line);
-            line = NULL;
         }
     }
+
+    // Liberar árbol.
+    tree = rb_destroy(tree);
+    assert(tree == NULL);
+
+    // ¿Cuánto tardé en leer?
     printf("Tarde en leer: \n");
     print_time(start);
 
-
-    if (result != NULL) {
-        for (i = 0; i < result->nvertices; i++) {
-            result->vecinos[i] = neighbours_init(result->vecinos[i], result->vertices[i].grado);
-            delta_grande = max(delta_grande, result->vertices[i].grado);
+    // Inicializo estructura de vecinos de cada vértice.
+    // Obtengo delta grande del grafo.
+    if (G != NULL) {
+        for (i = 0; i < G->nvertices; i++) {
+            G->vecinos[i] = neighbours_init(G->vecinos[i], G->vertices[i].grado);
+            delta_grande = max(delta_grande, G->vertices[i].grado);
         }
 
-        result->nvertices_color = calloc(delta_grande + 2, sizeof(u32));
-        assert(result->nvertices_color != NULL);
+        G->nvertices_color = calloc(delta_grande + 2, sizeof(u32));
+        assert(G->nvertices_color != NULL);
 
-        result->delta_grande = delta_grande;
+        G->delta_grande = delta_grande;
     }
 
-    return (result);
+    return (G);
 }
 
 int DestruirNimhe(NimheP G) {
-    int result = 1;
     u32 i = 0; // Iterador para liberar listas de vecinos.
 
     if (G != NULL) {
         if (G->vecinos != NULL) {
             for (i = 0; i < G->nvertices; i++) {
                 G->vecinos[i] = neighbours_destroy(G->vecinos[i]);
-                if (G->vecinos[i] != NULL) result = 0;
+                if (G->vecinos[i] != NULL) return 0;
             }
             free(G->vecinos);
             G->vecinos = NULL;
@@ -387,27 +448,17 @@ int DestruirNimhe(NimheP G) {
         G = NULL;
     }
 
-    return (result);
+    return (1);
 }
 
 u32 NumeroDeVertices(NimheP G) {
-    u32 result = 0;
-
-    if (G != NULL) {
-        result = G->nvertices;
-    }
-
-    return (result);
+    if (G != NULL) return G->nvertices;
+    else return 0;
 }
 
 u32 NumeroDeLados(NimheP G) {
-    u32 result = 0;
-
-    if (G != NULL) {
-        result = G->nlados;
-    }
-
-    return (result);
+    if (G != NULL) return G->nlados;
+    else return 0;
 }
 
 u32 NumeroVerticesDeColor(NimheP G, u32 i) {
@@ -461,7 +512,7 @@ VerticeSt IesimoVerticeEnElOrden(NimheP G, u32 i);
 
 VerticeSt IesimoVecino(NimheP G, VerticeSt x, u32 i);
 
-void Descolorear(NimheP G) {
+NimheP Descolorear(NimheP G) {
     u32 i = 0;
 
     if (G != NULL) {
@@ -469,6 +520,8 @@ void Descolorear(NimheP G) {
             G->vertices[i].color = 0;
         }
     }
+
+    return (G);
 }
 
 int Chidos(NimheP G) {
@@ -481,10 +534,11 @@ int Chidos(NimheP G) {
     pila_t stack = stack_empty();
 
     clock_t start;
-
     start = clock();
 
-    Descolorear(G);
+    // Descoloreamos grafo antes de arrancar.
+    G = Descolorear(G);
+
     while (nvertices_coloreados < G->nvertices) {
         i = 0;
         while (G->vertices[i].color != 0 && i < G->nvertices) {

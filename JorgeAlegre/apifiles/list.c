@@ -57,26 +57,15 @@ u32 list_index(list_t list, u32 i) {
 }
 
 list_t list_append(list_t list, u32 index, u32 nombre) {
-    list_t aux = NULL;
+    list_t new = NULL;
 
-    if (list == NULL) {
-        list = calloc(1, sizeof(struct _node_t));
-        assert(list != NULL);
-        list->index = index;
-        list->nombre = nombre;
-        list->next = NULL;
-    } else {
-        aux = list;
-        while (aux->next != NULL) {
-            aux = aux->next;
-        }
-        aux->next = calloc(1, sizeof(struct _node_t));
-        aux->next->next = NULL;
-        aux->next->index = index;
-        aux->next->nombre = nombre;
-    }
+    new = calloc(1, sizeof(struct _node_t));
+    assert(new != NULL);
+    new->next = list;
+    new->index = index;
+    new->nombre = nombre;
 
-    return (list);
+    return (new);
 }
 
 void list_dump(list_t list) {

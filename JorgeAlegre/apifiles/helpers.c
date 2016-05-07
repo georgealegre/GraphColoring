@@ -31,6 +31,7 @@ char* readline_from_stdin() {
         }
     }
 
+    assert(strlen(line) <= 80);
     return (line);
 }
 

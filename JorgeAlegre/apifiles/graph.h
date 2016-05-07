@@ -1,5 +1,7 @@
 // Autores:
 // Alegre, Jorge Facundo <facu.alegre@gmail.com>
+#ifndef GRAPH_H
+#define GRAPH_H
 
 #include "typedefs.h"
 
@@ -172,3 +174,5 @@ void OrdenEspecifico(NimheP G,u32* x);
  * Supongamos que x=4,0,2,6,5,3,1. Entonces OrdenEspecifico(G,x) ordenará los
  * vértices como V[4],V[0],V[2],etc, es decir, 22,1,7,1001,64,10,5.
  */
+
+#endif
