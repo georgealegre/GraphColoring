@@ -66,8 +66,8 @@ rb_tree_t rb_new() {
 
     result = calloc(1, sizeof(struct _rb_tree_t));
     assert(result != NULL);
-   
-    result->parent = result; 
+
+    result->parent = result;
     result->nil = true;
     result->color = BLACK;
 
@@ -180,9 +180,9 @@ u32 rb_search(rb_tree_t tree, u32 key) {
         if (tree->key == key) {
             return tree->value;
         } else if (key < tree->key && !tree->left->nil) {
-            return rb_exists(tree->left, key);
+            return rb_search(tree->left, key);
         } else if (!tree->right->nil) {
-            return rb_exists(tree->right, key);
+            return rb_search(tree->right, key);
         } else {
             return 0;
         }
@@ -223,7 +223,7 @@ rb_tree_t rb_destroy(rb_tree_t tree) {
         tree = rb_destroy_rec(tree);
 
         free(result);
-        result = NULL; 
+        result = NULL;
     } else if (tree != NULL && tree->nil) {
         tree->parent = NULL;
         tree->left = NULL;
@@ -234,4 +234,3 @@ rb_tree_t rb_destroy(rb_tree_t tree) {
 
     return (result);
 }
-

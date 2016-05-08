@@ -48,7 +48,6 @@ par_t handle_p_line(char* line) {
     char* liberar = NULL;
     char* copy = NULL; // Copia de "line" para usar strtok().
     char* subline = NULL; // Usada para guardar cada substring de la línea.
-    char* ptr = NULL; // Necesaria para strtoul().
     int i = 0; /* Índice del substring de "line". Si llega a 4, línea ...
     no tiene formato requerido. */
     unsigned int char_i = 0; // Índice de los caracteres en "subline".
@@ -94,7 +93,7 @@ par_t handle_p_line(char* line) {
                     char_i++;
                 }
                 if (es_num) {
-                    par->l = strtoul(subline, &ptr, 10);
+                    par->l = strtoul(subline, NULL, 10);
                 } else {
                     free(par);
                     par = NULL;
@@ -109,7 +108,7 @@ par_t handle_p_line(char* line) {
                     char_i++;
                 }
                 if (es_num) {
-                    par->r = strtoul(subline, &ptr, 10);
+                    par->r = strtoul(subline, NULL, 10);
                 } else {
                     free(par);
                     par = NULL;
@@ -136,7 +135,6 @@ par_t handle_e_line(char* line) {
     char* liberar = NULL;
     char* copy = NULL;
     char* subline = NULL; // Usada para guardar cada substring de la línea.
-    char* ptr = NULL; // Necesaria para strtoul().
     int i = 0; /* Índice del substring de "line". Si llega a 3, línea ...
     no tiene formato requerido. */
     unsigned int char_i = 0; // Índice de los caracteres en "subline".
@@ -175,7 +173,7 @@ par_t handle_e_line(char* line) {
                     char_i++;
                 }
                 if (es_num) {
-                    par->l = strtoul(subline, &ptr, 10);
+                    par->l = strtoul(subline, NULL, 10);
                 } else {
                     free(par);
                     par = NULL;
@@ -190,7 +188,7 @@ par_t handle_e_line(char* line) {
                     char_i++;
                 }
                 if (es_num) {
-                    par->r = strtoul(subline, &ptr, 10);
+                    par->r = strtoul(subline, NULL, 10);
                 } else {
                     free(par);
                     par = NULL;

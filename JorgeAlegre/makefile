@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O3 -std=c99
+CFLAGS = -Wall -Wextra -O3 -std=c99 -g
 OB = dirmain/color
 SRC = apifiles/
 BIN = bin/
@@ -17,4 +17,7 @@ try:
 	$(OB)
 
 valgrind:
-	valgrind --show-reachable=yes --leak-check=full $(OB)
+	time valgrind --show-reachable=yes --leak-check=full $(OB)
+
+massif:
+	valgrind --tool=massif --time-unit=B $(OB)

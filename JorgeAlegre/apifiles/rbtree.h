@@ -11,7 +11,7 @@ typedef struct _rb_tree_t *rb_tree_t;
 
 rb_tree_t rb_new();
 
-rb_tree_t rb_insert(rb_tree_t tree, u32 key, u32 name);
+rb_tree_t rb_insert(rb_tree_t tree, u32 key, u32 value);
 
 u32 rb_search(rb_tree_t tree, u32 key);
 

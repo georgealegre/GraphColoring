@@ -23,7 +23,8 @@ struct _vertex_t{
 struct _neighbours_t {
     bool* colors; /* Arreglo de tamaño del total de vecinos.
     La posición indica el color. El valor indica si el color está usado. */
-    list_t list; // Lista de vecinos.
+    u32* neighbours; // Arreglo de vecinos.
+    u32 size;
 };
 
 struct NimheSt{
@@ -43,7 +44,7 @@ void print_time(clock_t start){
 
     diff = clock() - start;
     msec = diff * 1000 / CLOCKS_PER_SEC;
-    printf("Time taken %d seconds %d milliseconds.\n", msec/1000, msec%1000);
+    printf("%d seconds %d milliseconds.\n", msec/1000, msec%1000);
 }
 
 neighbours_t neighbours_empty() {
@@ -51,8 +52,6 @@ neighbours_t neighbours_empty() {
 
     neighbours = calloc(1, sizeof(struct _neighbours_t));
     assert(neighbours != NULL);
-
-    neighbours->list = list_empty();
 
     return (neighbours);
 }
@@ -66,10 +65,10 @@ neighbours_t neighbours_init(neighbours_t neighbours, u32 size) {
 
 neighbours_t neighbours_destroy(neighbours_t neighbours) {
     if (neighbours != NULL) {
-        //Eliminamos la lista enlazada.
-        if (neighbours->list != NULL) {
-            neighbours->list = list_destroy(neighbours->list);
-            assert(neighbours->list == NULL);
+        //Eliminamos el arreglo de vecinos.
+        if (neighbours->neighbours != NULL) {
+            free(neighbours->neighbours);
+            neighbours->neighbours = NULL;
         }
 
         // Eliminamos bool vector.
@@ -87,11 +86,13 @@ neighbours_t neighbours_destroy(neighbours_t neighbours) {
 }
 
 u32 neighbours_i(neighbours_t neighbours, u32 i) {
-    return (list_index(neighbours->list, i));
+    return (neighbours->neighbours[i]);
 }
 
-neighbours_t neighbours_append(neighbours_t neighbours, u32 index, u32 nombre) {
-    neighbours->list = list_append(neighbours->list, index, nombre);
+neighbours_t neighbours_append(neighbours_t neighbours, u32 index) {
+    neighbours->neighbours = realloc(neighbours->neighbours, (neighbours->size + 1)*sizeof(u32));
+    neighbours->neighbours[neighbours->size] = index;
+    neighbours->size++;
     return (neighbours);
 }
 
@@ -168,7 +169,7 @@ void ImprimirVecinosDelVertice(VerticeSt x, NimheP G) {
         }
 
         // Imprimir con punto al último vecino.
-        printf("%u.", G->vertices[(neighbours_i(G->vecinos[posv], i))].nombre);
+        printf("%u.\n", G->vertices[(neighbours_i(G->vecinos[posv], i))].nombre);
     }
 }
 
@@ -185,7 +186,7 @@ NimheP agregar_vertices(NimheP G, u32 lvertice, bool existel, u32 pos_lv, u32 rv
         G->vertices[*pos_vertice_nuevo].grado = 1;
         G->vertices[*pos_vertice_nuevo].color = 0;
         G->vecinos[*pos_vertice_nuevo] = neighbours_empty();
-        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], *pos_vertice_nuevo + 1, rvertice);
+        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], *pos_vertice_nuevo + 1);
 
         (*pos_vertice_nuevo)++;
 
@@ -193,7 +194,7 @@ NimheP agregar_vertices(NimheP G, u32 lvertice, bool existel, u32 pos_lv, u32 rv
         G->vertices[*pos_vertice_nuevo].grado = 1;
         G->vertices[*pos_vertice_nuevo].color = 0;
         G->vecinos[*pos_vertice_nuevo] = neighbours_empty();
-        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], *pos_vertice_nuevo - 1, lvertice);
+        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], *pos_vertice_nuevo - 1);
 
         (*pos_vertice_nuevo)++;
     } else if (!existel && exister) {
@@ -202,11 +203,11 @@ NimheP agregar_vertices(NimheP G, u32 lvertice, bool existel, u32 pos_lv, u32 rv
         G->vertices[*pos_vertice_nuevo].grado = 1;
         G->vertices[*pos_vertice_nuevo].color = 0;
         G->vecinos[*pos_vertice_nuevo] = neighbours_empty();
-        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], pos_rv, rvertice);
+        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], pos_rv);
 
         // Agregar izquierdo como vecino de derecho.
         G->vertices[pos_rv].grado++;
-        G->vecinos[pos_rv] = neighbours_append(G->vecinos[pos_rv], *pos_vertice_nuevo, lvertice);
+        G->vecinos[pos_rv] = neighbours_append(G->vecinos[pos_rv], *pos_vertice_nuevo);
 
         (*pos_vertice_nuevo)++;
     } else if (existel && !exister) {
@@ -215,19 +216,19 @@ NimheP agregar_vertices(NimheP G, u32 lvertice, bool existel, u32 pos_lv, u32 rv
         G->vertices[*pos_vertice_nuevo].grado = 1;
         G->vertices[*pos_vertice_nuevo].color = 0;
         G->vecinos[*pos_vertice_nuevo] = neighbours_empty();
-        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], pos_lv, lvertice);
+        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], pos_lv);
 
         // Agregar derecho como vecino de izquierdo.
         G->vertices[pos_lv].grado++;
-        G->vecinos[pos_lv] = neighbours_append(G->vecinos[pos_lv], *pos_vertice_nuevo, rvertice);
+        G->vecinos[pos_lv] = neighbours_append(G->vecinos[pos_lv], *pos_vertice_nuevo);
 
         (*pos_vertice_nuevo)++;
     } else {
         // Ambos vértices ya existen. Solo setear vecinos.
         G->vertices[pos_lv].grado++;
         G->vertices[pos_rv].grado++;
-        G->vecinos[pos_lv] = neighbours_append(G->vecinos[pos_lv], pos_rv, rvertice);
-        G->vecinos[pos_rv] = neighbours_append(G->vecinos[pos_rv], pos_lv, lvertice);
+        G->vecinos[pos_lv] = neighbours_append(G->vecinos[pos_lv], pos_rv);
+        G->vecinos[pos_rv] = neighbours_append(G->vecinos[pos_rv], pos_lv);
     }
 
     return (G);
@@ -243,7 +244,7 @@ NimheP NuevoNimhe() {
     char* line = NULL; // Línea leída.
     char* error_lectura = "Error en formato de entrada\n"; // Mensaje de error.
     u32 nlados_leidos = 0; // Para saber cuántos lados llevo leídos.
-    
+
     // ¿Existe el vértice?
     rb_tree_t tree = NULL; // Arbol con vértices que leo.
     bool existel = false; // True si vértice izquierdo ya fue procesado.
@@ -255,7 +256,7 @@ NimheP NuevoNimhe() {
     par_t par = NULL; // Valores obtenidos de la lectura de cada línea.
     u32 pos_vertice_nuevo = 0; // Para saber hasta donde insertar vértice nuevo.
     u32 i = 0; // Para inicializar estructura de vecinos de vértices.
-    
+
     // Para guardar la hora de inicio.
     clock_t start;
     start = clock();
@@ -336,30 +337,27 @@ NimheP NuevoNimhe() {
                         pos_lv = 0;
                         // Si existe, decime donde.
                         // Si no existe, agregalo al árbol de vértices junto con su posición.
-                        if (existel) {
-                            pos_lv = rb_search(tree, lvertice);
-                        } else {
-                            tree = rb_insert(tree, lvertice, pos_vertice_nuevo);
-                        }
-                        
+                        if (existel) pos_lv = rb_search(tree, lvertice);
+                        else tree = rb_insert(tree, lvertice, pos_vertice_nuevo);
+
                         // Reviso si vértice derecho ya existe.
                         exister = rb_exists(tree, rvertice);
                         pos_rv = 0;
                         // Si existe, decime donde.
-                        if (exister) pos_rv = rb_search(tree, rvertice);
-                        // Si no existe, su posición nueva depende de 
+                        // Si no existe, su posición nueva depende de
                         // si vértice izquiero es nuevo o no.
+                        if (exister) pos_rv = rb_search(tree, rvertice);
                         else if (existel) tree = rb_insert(tree, rvertice, pos_vertice_nuevo);
                         else tree = rb_insert(tree, rvertice, pos_vertice_nuevo + 1);
 
                         // Agrego vértices según corresponda.
-                        G = agregar_vertices(G, 
-                                             lvertice, 
-                                             existel, 
-                                             pos_lv, 
-                                             rvertice, 
-                                             exister, 
-                                             pos_rv, 
+                        G = agregar_vertices(G,
+                                             lvertice,
+                                             existel,
+                                             pos_lv,
+                                             rvertice,
+                                             exister,
+                                             pos_rv,
                                              &pos_vertice_nuevo);
                         nlados_leidos++;
 
@@ -400,8 +398,14 @@ NimheP NuevoNimhe() {
     assert(tree == NULL);
 
     // ¿Cuánto tardé en leer?
-    printf("Tarde en leer: \n");
+    printf("Tarde en leer: ");
     print_time(start);
+
+    // DEBUG
+    for (u32 i = 0; i < G->nvertices; i++) {
+        printf("Vecinos del vértice %u: ", G->vertices[i].nombre);
+        ImprimirVecinosDelVertice(G->vertices[i], G);
+    }
 
     // Inicializo estructura de vecinos de cada vértice.
     // Obtengo delta grande del grafo.
@@ -435,10 +439,6 @@ int DestruirNimhe(NimheP G) {
         if (G->vertices != NULL) {
             free(G->vertices);
             G->vertices = NULL;
-        }
-        if (G->orden_actual != NULL) {
-            free(G->orden_actual);
-            G->orden_actual = NULL;
         }
         if (G->nvertices_color != NULL) {
             free(G->nvertices_color);
@@ -512,18 +512,6 @@ VerticeSt IesimoVerticeEnElOrden(NimheP G, u32 i);
 
 VerticeSt IesimoVecino(NimheP G, VerticeSt x, u32 i);
 
-NimheP Descolorear(NimheP G) {
-    u32 i = 0;
-
-    if (G != NULL) {
-        for (i = 0; i < G->nvertices; i++) {
-            G->vertices[i].color = 0;
-        }
-    }
-
-    return (G);
-}
-
 int Chidos(NimheP G) {
     int result = 1;
     u32 i = 0; // Iterador de vértices en el grafo.
@@ -536,9 +524,6 @@ int Chidos(NimheP G) {
     clock_t start;
     start = clock();
 
-    // Descoloreamos grafo antes de arrancar.
-    G = Descolorear(G);
-
     while (nvertices_coloreados < G->nvertices) {
         i = 0;
         while (G->vertices[i].color != 0 && i < G->nvertices) {
@@ -546,16 +531,14 @@ int Chidos(NimheP G) {
         }
         G->vertices[i].color = 1;
         nvertices_coloreados++;
-        stack = stack_push(stack, i); //crear Queue con G->vertices[i] como unico elemento.
+        stack = stack_push(stack, i);
         while (stack_size(stack)) {
             v = stack_first(stack);
             stack = stack_pop(stack);
             for (x = 0; x < G->vertices[v].grado ; x++) {
                 w = neighbours_i(G->vecinos[v], x);
                 if (G->vertices[w].color == 0) {
-                    //push queue (vecino)
                     stack = stack_push(stack, w);
-                    //color del vecino = 3 - color de v
                     G->vertices[w].color = 3 - G->vertices[v].color;
                     nvertices_coloreados++;
                 }
@@ -576,7 +559,7 @@ int Chidos(NimheP G) {
         }
     }
 
-    printf("Chidos tardo: \n");
+    printf("Chidos tardo: ");
     print_time(start);
 
     return (result);
@@ -591,8 +574,6 @@ u32 Greedy(NimheP G) {
     clock_t start;
 
     start = clock();
-
-    Descolorear(G);
 
     // Colorear primer vértice con color 1
     G->vertices[0].color = 1;
@@ -620,13 +601,26 @@ u32 Greedy(NimheP G) {
         if (!G->nvertices_color[c]) result++;
     }
 
-    printf("Greedy tardo:\n");
+    printf("Greedy tardo: ");
     print_time(start);
+
+    for (u32 i = 0; i < G->nvertices; i++) {
+        printf("Vecinos del vértice %u: ", G->vertices[i].nombre);
+        ImprimirVecinosDelVertice(G->vertices[i], G);
+    }
 
     return (result);
 }
 
-void OrdenNatural(NimheP G);
+int compare_name(const void* vertex1, const void* vertex2) {
+    VerticeSt *v1 = (VerticeSt *)vertex1;
+    VerticeSt *v2 = (VerticeSt *)vertex2;
+    return (v1->nombre - v2->nombre);
+}
+
+void OrdenNatural(NimheP G) {
+    qsort(G->vertices, G->nvertices, sizeof(struct _vertex_t), compare_name);
+}
 
 void OrdenWelshPowell(NimheP G);
 

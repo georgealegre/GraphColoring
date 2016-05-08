@@ -8,13 +8,18 @@ int main() {
     if (grafo != NULL) {
         printf("Vertices: %u\n", NumeroDeVertices(grafo));
         printf("Lados %u\n", NumeroDeLados(grafo));
+
+        OrdenNatural(grafo);
+
         if (Chidos(grafo)) {
             printf("Grafo es bipartito\n");
         } else {
             printf("Grafo no es bipartito\n");
         }
 
+        //for (int i = 0; i < 1000; i++) {
         printf("Greedy sobre el grafo: %u\n", Greedy(grafo));
+        //}
 
         if (DestruirNimhe(grafo)) printf("FIN.\n");
         else printf("Todo mal.\n");

@@ -6,11 +6,14 @@
 
 struct _nodo_t {
     u32 index;
+    u32 size;
     pila_t next;
 };
 
 pila_t stack_empty() {
-    pila_t stack = NULL;
+    pila_t stack = calloc(1, sizeof(struct _nodo_t));
+    stack->size = 0;
+    stack->next = NULL;
 
     return (stack);
 }
@@ -43,24 +46,14 @@ pila_t stack_destroy(pila_t stack) {
 }
 
 u32 stack_size(pila_t stack) {
-    u32 length = 0;
-    pila_t aux = stack;
-
-    if (aux != NULL) {
-        while (aux != NULL) {
-            aux = aux->next;
-            length++;
-        }
-    }
-
-    return (length);
+    return (stack->size);
 }
 
 u32 stack_first(pila_t stack) {
     u32 result = 0;
 
-    if (stack != NULL) {
-        result = stack->index;
+    if (stack != NULL && stack->next != NULL) {
+        result = stack->next->index;
     }
 
     return (result);
@@ -70,18 +63,22 @@ pila_t stack_push(pila_t stack, u32 index) {
     pila_t head = NULL;
     head = calloc(1, sizeof(struct _nodo_t));
     head->index = index;
-    head->next = stack;
+    head->next = stack->next;
+    stack->next = head;
+    stack->size++;
 
-    return (head);
+    return (stack);
 }
 
 pila_t stack_pop(pila_t stack) {
-    pila_t aux = stack;
+    pila_t aux = NULL;
 
-    if (stack != NULL) {
-        stack = stack->next;
+    if (stack != NULL && stack->next != NULL) {
+        aux = stack->next;
+        stack->next = stack->next->next;
         free(aux);
         aux = NULL;
+        stack->size--;
     }
 
     return (stack);
