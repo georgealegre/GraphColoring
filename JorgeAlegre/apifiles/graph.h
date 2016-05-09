@@ -5,6 +5,8 @@
 
 #include "typedefs.h"
 
+#define ORDENNATURAL 10
+
 typedef struct _neighbours_t *neighbours_t;
 typedef struct NimheSt *NimheP;
 typedef struct _vertex_t VerticeSt;

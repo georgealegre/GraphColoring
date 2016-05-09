@@ -31,7 +31,7 @@ struct NimheSt{
     u32 nvertices; // Número de vertices en el grafo.
     u32 nlados; // Número de lados en el grafo.
     u32 ncolores; // Número de colores usados hasta el momento para el coloreo propio.
-    u32* orden_actual; // String del orden del grafo.
+    u32* orden; // String del orden del grafo.
     u32 delta_grande;
     u32* nvertices_color; // El valor en la posición "i" = vértices de color "i".
     VerticeSt* vertices; // Arreglo de vértices en orden original.
@@ -300,6 +300,11 @@ NimheP NuevoNimhe() {
                 G->vecinos = calloc(G->nvertices, sizeof(neighbours_t));
                 assert(G->vecinos != NULL);
 
+                // Inicializo orden
+                G->orden = calloc(G->nvertices, sizeof(u32));
+                assert(G->orden != NULL);
+                for (i = 0; i < G->nvertices; i++) G->orden[i] = i;
+
                 // Inicializo árbol de vértices leídos.
                 tree = rb_new();
             } else {
@@ -403,8 +408,8 @@ NimheP NuevoNimhe() {
 
     // DEBUG
     for (u32 i = 0; i < G->nvertices; i++) {
-        printf("Vecinos del vértice %u: ", G->vertices[i].nombre);
-        ImprimirVecinosDelVertice(G->vertices[i], G);
+        printf("Vecinos del vértice %u: ", G->vertices[G->orden[i]].nombre);
+        ImprimirVecinosDelVertice(G->vertices[G->orden[i]], G);
     }
 
     // Inicializo estructura de vecinos de cada vértice.
@@ -605,21 +610,69 @@ u32 Greedy(NimheP G) {
     print_time(start);
 
     for (u32 i = 0; i < G->nvertices; i++) {
-        printf("Vecinos del vértice %u: ", G->vertices[i].nombre);
-        ImprimirVecinosDelVertice(G->vertices[i], G);
+        printf("Vecinos del vértice %u: ", G->vertices[G->orden[i]].nombre);
+        ImprimirVecinosDelVertice(G->vertices[G->orden[i]], G);
     }
 
     return (result);
 }
 
-int compare_name(const void* vertex1, const void* vertex2) {
-    VerticeSt *v1 = (VerticeSt *)vertex1;
-    VerticeSt *v2 = (VerticeSt *)vertex2;
-    return (v1->nombre - v2->nombre);
+void swap(u32* array, u32 left, u32 right) {
+    u32 temp = array[left];
+    array[left] = array[right];
+    array[right] = temp;
 }
 
+u32 pivot(NimheP G, u32 left, u32 right, int orden){
+
+    u32 i = left + 1;
+    u32 j = right;
+    u32 piv = left;
+
+    if (orden > 0) j = right;
+    while (i <= j) {
+        if (G->vertices[G->orden[i]].nombre <= G->vertices[G->orden[piv]].nombre  /* compare(G, i, piv, orden)*/  /* a[i] <= a[piv] */) {
+            i = i + 1;
+        } else if (G->vertices[G->orden[piv]].nombre <= G->vertices[G->orden[j]].nombre  /* compare(G, piv, j, orden) */  /* a[piv] < a[j] */) {
+            j = j - 1;
+        } else {
+            swap(G->orden, i, j);
+            i = i + 1;
+            j = j - 1;
+        }
+    }
+    swap(G->orden, piv, j);
+
+    return j;
+}
+
+void quick_sort_rec(NimheP G, u32 left, u32 right, int orden) {
+    u32 piv = 0;
+
+    if (left < right) {
+        piv = pivot(G, left, right, orden);
+        if (piv > 0) {
+            quick_sort_rec(G, left, piv - 1, orden);
+        }
+        quick_sort_rec(G, piv + 1, right, orden);
+    }
+}
+
+void quick_sort(NimheP G, int orden) {
+    quick_sort_rec(G, 0, G->nvertices - 1, orden);
+}
+
+//u32 compare(NimheP G, u32 left, u32 right, int orden) {
+//    switch (orden) {
+//        case (ORDENNATURAL):
+//            return (G->vertices[left]).nombre <
+//        case default:
+//            return 0;
+//    }
+//}
+
 void OrdenNatural(NimheP G) {
-    qsort(G->vertices, G->nvertices, sizeof(struct _vertex_t), compare_name);
+    quick_sort(G, ORDENNATURAL);
 }
 
 void OrdenWelshPowell(NimheP G);
@@ -632,4 +685,4 @@ void ChicoGrande(NimheP G);
 
 void Revierte(NimheP G);
 
-void OrdenEspecifico(NimheP G,u32* x);
+void OrdenEspecifico(NimheP G, u32* x);
