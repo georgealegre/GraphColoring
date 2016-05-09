@@ -581,7 +581,7 @@ u32 Greedy(NimheP G) {
     start = clock();
 
     // Colorear primer vértice con color 1
-    G->vertices[0].color = 1;
+    G->vertices[G->orden[0]].color = 1;
 
     for (v = 1; v < G->nvertices; v++) {
         // Por cada vértice a partir del segundo (index 1), recorrer su lista
@@ -591,11 +591,11 @@ u32 Greedy(NimheP G) {
         // En pocas palabras, buscar el color más chico no usado por vecinos.
 
         // Encontrar color.
-        G->vecinos[v] = neighbours_update(G, v);
-        color = neighbours_find_hole(G->vecinos[v], G->vertices[v].grado);
+        G->vecinos[G->orden[v]] = neighbours_update(G, G->orden[v]);
+        color = neighbours_find_hole(G->vecinos[G->orden[v]], G->vertices[G->orden[v]].grado);
 
         // Colorear vértice.
-        G->vertices[v].color = color;
+        G->vertices[G->orden[v]].color = color;
 
         // Aumentar arreglo de cantidad de vértices coloreados con "color".
         G->nvertices_color[color]++;
@@ -623,17 +623,34 @@ void swap(u32* array, u32 left, u32 right) {
     array[right] = temp;
 }
 
-u32 pivot(NimheP G, u32 left, u32 right, int orden){
+bool compare(NimheP G, u32 left, u32 right, int orden) {
+    switch (orden) {
+        case ORDENNATURAL:
+            return G->vertices[G->orden[left]].nombre <= G->vertices[G->orden[right]].nombre;
+        case WELSHPOWELL:
+            return G->vertices[G->orden[left]].grado >= G->vertices[G->orden[right]].grado;
+        case REORDENALEATORIORESTRINGIDO:
+            return 0;
+        case GRANDECHICO:
+            return 0;
+        case CHICOGRANDE:
+            return 0;
+        case REVIERTE:
+            return 0;
+        default:
+            return 0;
+    }
+}
 
+u32 pivot(NimheP G, u32 left, u32 right, int orden) {
     u32 i = left + 1;
     u32 j = right;
     u32 piv = left;
 
-    if (orden > 0) j = right;
     while (i <= j) {
-        if (G->vertices[G->orden[i]].nombre <= G->vertices[G->orden[piv]].nombre  /* compare(G, i, piv, orden)*/  /* a[i] <= a[piv] */) {
+        if (compare(G, i, piv, orden)) {
             i = i + 1;
-        } else if (G->vertices[G->orden[piv]].nombre <= G->vertices[G->orden[j]].nombre  /* compare(G, piv, j, orden) */  /* a[piv] < a[j] */) {
+        } else if (compare(G, piv, j, orden)) {
             j = j - 1;
         } else {
             swap(G->orden, i, j);
@@ -651,9 +668,7 @@ void quick_sort_rec(NimheP G, u32 left, u32 right, int orden) {
 
     if (left < right) {
         piv = pivot(G, left, right, orden);
-        if (piv > 0) {
-            quick_sort_rec(G, left, piv - 1, orden);
-        }
+        if (piv) quick_sort_rec(G, left, piv - 1, orden);
         quick_sort_rec(G, piv + 1, right, orden);
     }
 }
@@ -662,27 +677,29 @@ void quick_sort(NimheP G, int orden) {
     quick_sort_rec(G, 0, G->nvertices - 1, orden);
 }
 
-//u32 compare(NimheP G, u32 left, u32 right, int orden) {
-//    switch (orden) {
-//        case (ORDENNATURAL):
-//            return (G->vertices[left]).nombre <
-//        case default:
-//            return 0;
-//    }
-//}
 
 void OrdenNatural(NimheP G) {
     quick_sort(G, ORDENNATURAL);
 }
 
-void OrdenWelshPowell(NimheP G);
+void OrdenWelshPowell(NimheP G) {
+    quick_sort(G, WELSHPOWELL);
+}
 
-void ReordenAleatorioRestringido(NimheP G);
+void ReordenAleatorioRestringido(NimheP G) {
+    quick_sort(G, REORDENALEATORIORESTRINGIDO);
+}
 
-void GrandeChico(NimheP G);
+void GrandeChico(NimheP G) {
+    quick_sort(G, GRANDECHICO);
+}
 
-void ChicoGrande(NimheP G);
+void ChicoGrande(NimheP G) {
+    quick_sort(G, CHICOGRANDE);
+}
 
-void Revierte(NimheP G);
+void Revierte(NimheP G) {
+    quick_sort(G, REVIERTE);
+}
 
 void OrdenEspecifico(NimheP G, u32* x);

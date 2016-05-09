@@ -6,6 +6,12 @@
 #include "typedefs.h"
 
 #define ORDENNATURAL 10
+#define WELSHPOWELL 11
+#define REORDENALEATORIORESTRINGIDO 12
+#define GRANDECHICO 13
+#define CHICOGRANDE 14
+#define REVIERTE 15
+
 
 typedef struct _neighbours_t *neighbours_t;
 typedef struct NimheSt *NimheP;

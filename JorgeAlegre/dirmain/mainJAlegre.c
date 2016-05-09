@@ -9,7 +9,7 @@ int main() {
         printf("Vertices: %u\n", NumeroDeVertices(grafo));
         printf("Lados %u\n", NumeroDeLados(grafo));
 
-        OrdenNatural(grafo);
+        OrdenWelshPowell(grafo);
 
         if (Chidos(grafo)) {
             printf("Grafo es bipartito\n");
