@@ -8,23 +8,16 @@
 #include <time.h>
 
 #include "helpers.h"
-#include "pila.h"
-#include "list.h"
+#include "u32queue.h"
 #include "graph.h"
 #include "rbtree.h"
 
 
-struct _vertex_t{
-    u32 nombre;
-    u32 grado;
-    u32 color;
-};
-
 struct _neighbours_t {
-    bool* colors; /* Arreglo de tamaño del total de vecinos.
-    La posición indica el color. El valor indica si el color está usado. */
-    u32* neighbours; // Arreglo de vecinos.
-    u32 size;
+    bool* colors;       /* Arreglo de tamaño del total de vecinos.
+                         * La posición indica el color. El valor indica si el color está usado. */
+    u32* neighbours;    // Arreglo de vecinos.
+    u32 size;           // Cantidad de vecinos.
 };
 
 struct NimheSt{
@@ -33,9 +26,9 @@ struct NimheSt{
     u32 ncolores; // Número de colores usados hasta el momento para el coloreo propio.
     u32* orden; // String del orden del grafo.
     u32 delta_grande;
-    u32* nvertices_color; // El valor en la posición "i" = vértices de color "i".
-    VerticeSt* vertices; // Arreglo de vértices en orden original.
-    neighbours_t* vecinos; // Arreglo de listas de vecinos de vértices.
+    u32* nvertices_color;   // El valor en la posición "i" = # de vértices de color "i".
+    VerticeSt* vertices;    // Arreglo de vértices en orden original.
+    neighbours_t* vecinos;  // Arreglo de listas de vecinos de vértices.
 };
 
 void print_time(clock_t start){
@@ -120,6 +113,10 @@ u32 neighbours_find_hole(neighbours_t neighbours, u32 grado) {
 neighbours_t neighbours_update(NimheP G, u32 vertex) {
     u32 i = 0;
     u32 color_vecino = 0;
+
+    for (u32 j = 0; j < G->vertices[vertex].grado; j++) {
+        G->vecinos[vertex]->colors[j] = false;
+    }
 
     for (i = 0; i < G->vertices[vertex].grado; i++) {
         color_vecino = G->vertices[neighbours_i(G->vecinos[vertex], i)].color;
@@ -235,6 +232,7 @@ NimheP agregar_vertices(NimheP G, u32 lvertice, bool existel, u32 pos_lv, u32 rv
 }
 
 NimheP NuevoNimhe() {
+    srand(time(NULL));
     // Grafo.
     NimheP G = NULL; // Grafo que será devuelto por función.
     u32 delta_grande = 0; // Delta grande del grafo G.
@@ -283,12 +281,12 @@ NimheP NuevoNimhe() {
                 // Inicializamos grafo.
                 G = calloc(1, sizeof(struct NimheSt));
                 assert(G != NULL);
+                G->ncolores = 0;
 
                 // Obtengo datos leídos de línea.
                 G->nvertices = get_l(par);
                 G->nlados = get_r(par);
                 nlados = get_r(par);
-                G->ncolores = 0;
 
                 // Ya terminé de usar datos de línea leída
                 free(par);
@@ -303,7 +301,8 @@ NimheP NuevoNimhe() {
                 // Inicializo orden
                 G->orden = calloc(G->nvertices, sizeof(u32));
                 assert(G->orden != NULL);
-                for (i = 0; i < G->nvertices; i++) G->orden[i] = i;
+                for (i = 0; i < G->nvertices; i++)
+                    G->orden[i] = i;
 
                 // Inicializo árbol de vértices leídos.
                 tree = rb_new();
@@ -342,8 +341,10 @@ NimheP NuevoNimhe() {
                         pos_lv = 0;
                         // Si existe, decime donde.
                         // Si no existe, agregalo al árbol de vértices junto con su posición.
-                        if (existel) pos_lv = rb_search(tree, lvertice);
-                        else tree = rb_insert(tree, lvertice, pos_vertice_nuevo);
+                        if (existel)
+                            pos_lv = rb_search(tree, lvertice);
+                        else
+                            tree = rb_insert(tree, lvertice, pos_vertice_nuevo);
 
                         // Reviso si vértice derecho ya existe.
                         exister = rb_exists(tree, rvertice);
@@ -351,9 +352,12 @@ NimheP NuevoNimhe() {
                         // Si existe, decime donde.
                         // Si no existe, su posición nueva depende de
                         // si vértice izquiero es nuevo o no.
-                        if (exister) pos_rv = rb_search(tree, rvertice);
-                        else if (existel) tree = rb_insert(tree, rvertice, pos_vertice_nuevo);
-                        else tree = rb_insert(tree, rvertice, pos_vertice_nuevo + 1);
+                        if (exister)
+                            pos_rv = rb_search(tree, rvertice);
+                        else if (existel)
+                            tree = rb_insert(tree, rvertice, pos_vertice_nuevo);
+                        else
+                            tree = rb_insert(tree, rvertice, pos_vertice_nuevo + 1);
 
                         // Agrego vértices según corresponda.
                         G = agregar_vertices(G,
@@ -364,8 +368,10 @@ NimheP NuevoNimhe() {
                                              exister,
                                              pos_rv,
                                              &pos_vertice_nuevo);
+                        // Aumentamos por 1 la cantidad de vértices leidos.
                         nlados_leidos++;
 
+                        // Borramos línea.
                         free(line);
                     } else {
                         // Me quedan lados por leer pero hubo error de lectura.
@@ -406,12 +412,6 @@ NimheP NuevoNimhe() {
     printf("Tarde en leer: ");
     print_time(start);
 
-    // DEBUG
-    for (u32 i = 0; i < G->nvertices; i++) {
-        printf("Vecinos del vértice %u: ", G->vertices[G->orden[i]].nombre);
-        ImprimirVecinosDelVertice(G->vertices[G->orden[i]], G);
-    }
-
     // Inicializo estructura de vecinos de cada vértice.
     // Obtengo delta grande del grafo.
     if (G != NULL) {
@@ -420,6 +420,10 @@ NimheP NuevoNimhe() {
             delta_grande = max(delta_grande, G->vertices[i].grado);
         }
 
+        /* G->nvertices_color[0] = # vértices no coloreados.
+         * G->nvertices_color[i] = # vértices coloreados con i.
+         * Tamaño es delta grande + 2 para guardar espacio para color 0
+         * y por cota superior de Greedy (delta grande + 1). */
         G->nvertices_color = calloc(delta_grande + 2, sizeof(u32));
         assert(G->nvertices_color != NULL);
 
@@ -433,6 +437,7 @@ int DestruirNimhe(NimheP G) {
     u32 i = 0; // Iterador para liberar listas de vecinos.
 
     if (G != NULL) {
+        // Destruir estructura de vecinos para cada vértice.
         if (G->vecinos != NULL) {
             for (i = 0; i < G->nvertices; i++) {
                 G->vecinos[i] = neighbours_destroy(G->vecinos[i]);
@@ -441,14 +446,23 @@ int DestruirNimhe(NimheP G) {
             free(G->vecinos);
             G->vecinos = NULL;
         }
+        // Destruir vértices.
         if (G->vertices != NULL) {
             free(G->vertices);
             G->vertices = NULL;
         }
+        // Destruir orden del grafo.
+        if (G->orden != NULL) {
+            free(G->orden);
+            G->orden = NULL;
+        }
+
+        // Destruir arreglo de colores usados.
         if (G->nvertices_color != NULL) {
             free(G->nvertices_color);
             G->nvertices_color = NULL;
         }
+        // Destruir grafo.
         free(G);
         G = NULL;
     }
@@ -467,15 +481,8 @@ u32 NumeroDeLados(NimheP G) {
 }
 
 u32 NumeroVerticesDeColor(NimheP G, u32 i) {
-    u32 result = 0;
-
-    if (G != NULL) {
-        for (u32 j = 0; j < G->nvertices; j++) {
-            if (G->vertices[j].color == i) result++;
-        }
-    }
-
-    return (result);
+    if (G != NULL) return G->nvertices_color[i];
+    else return 0;
 }
 
 u32 ImprimirVerticesDeColor(NimheP G, u32 i) {
@@ -504,46 +511,83 @@ u32 ImprimirVerticesDeColor(NimheP G, u32 i) {
 }
 
 u32 CantidadDeColores(NimheP G) {
-    u32 result = 0;
+    if (G != NULL) return G->ncolores;
+    else return 0;
+}
 
-    if (G != NULL) {
-        result = G->ncolores;
+VerticeSt IesimoVerticeEnElOrden(NimheP G, u32 i) {
+    return G->vertices[G->orden[i]];
+}
+
+VerticeSt IesimoVecino(NimheP G, VerticeSt x, u32 i) {
+    u32 posx = 0; // Para guardar posición de vertice x.
+
+    // Encontrar posición del vertice x.
+    for (u32 i = 0; i < G->nvertices; i++) {
+        if (G->vertices[i].nombre == x.nombre) {
+            posx = i;
+            break;
+        }
+    }
+    // Devolver iésimo vecino del vértice x.
+    return G->vertices[neighbours_i(G->vecinos[posx], i)];
+}
+
+
+/***********************************************************
+ *                                                         *
+ *                  Funciones de coloreo.                  *
+ *                                                         *
+ ***********************************************************/
+
+bool coloreo_es_propio(NimheP G) {
+    bool result = true;
+
+    for (u32 i = 0; i < G->nvertices; i++) {
+        for (u32 j = 0; j < G->vertices[G->orden[i]].grado; j++) {
+            result &= G->vertices[G->orden[i]].color != G->vertices[neighbours_i(G->vecinos[G->orden[i]], j)].color;
+        }
     }
 
     return (result);
 }
 
-VerticeSt IesimoVerticeEnElOrden(NimheP G, u32 i);
-
-VerticeSt IesimoVecino(NimheP G, VerticeSt x, u32 i);
-
 int Chidos(NimheP G) {
-    int result = 1;
     u32 i = 0; // Iterador de vértices en el grafo.
     u32 x = 0; // Iterador de vecinos del vértice.
     u32 nvertices_coloreados = 0; // Cuantos vértices colorie.
     u32 v; // Posición del vértice sobre el cual trabajaremos.
     u32 w; // Posición del vecino del "v".
-    pila_t stack = stack_empty();
+    u32queue_t queue = queue_empty(); // Cola para guardar vecinos del vértice.
 
-    clock_t start;
-    start = clock();
-
+    // Mientras tenga vértices para colorear.
     while (nvertices_coloreados < G->nvertices) {
+        // Buscar primer vértice no coloreado.
         i = 0;
         while (G->vertices[i].color != 0 && i < G->nvertices) {
             i++;
         }
+
+        // Colorearlo con 1 y aumentar número de vértices coloreados.
         G->vertices[i].color = 1;
         nvertices_coloreados++;
-        stack = stack_push(stack, i);
-        while (stack_size(stack)) {
-            v = stack_first(stack);
-            stack = stack_pop(stack);
+
+        // Encolar vértice.
+        queue = queue_enqueue(queue, i);
+
+        // Mientras la cola tenga vértices.
+        while (!queue_is_empty(queue)) {
+            // Sacar el primero de la cola.
+            v = queue_first(queue);
+            queue = queue_dequeue(queue);
+
+            // Por cada vecino del vértice.
             for (x = 0; x < G->vertices[v].grado ; x++) {
                 w = neighbours_i(G->vecinos[v], x);
+
+                // Si no esta coloreado, colorearlo y agregarlo a cola.
                 if (G->vertices[w].color == 0) {
-                    stack = stack_push(stack, w);
+                    queue = queue_enqueue(queue, w);
                     G->vertices[w].color = 3 - G->vertices[v].color;
                     nvertices_coloreados++;
                 }
@@ -552,38 +596,33 @@ int Chidos(NimheP G) {
     }
 
     // Liberar memoria usada por stack.
-    stack = stack_destroy(stack);
-    assert(stack == NULL);
+    queue = queue_destroy(queue);
+    assert(queue == NULL);
 
-    // Ver que el coloreo sea propio.
-    for (i = 0; i < G->nvertices && result; i++) {
-        for (x = 0; x < G->vertices[i].grado && result; x++) {
-            if (G->vertices[i].color == G->vertices[neighbours_i(G->vecinos[i], x)].color) {
-                result = 0;
-            }
-        }
-    }
-
-    printf("Chidos tardo: ");
-    print_time(start);
-
-    return (result);
+    return (coloreo_es_propio(G));
 }
 
 u32 Greedy(NimheP G) {
-    u32 result = 0;
+    u32 vactual = 0; // Posición del vértice sobre el cual se esta trabajando.
     u32 v = 0; // Iterador de vértices.
     u32 color = 0; // Color asignado a cada vértice en iteración.
     u32 c = 0; // Iterador de colores.
 
-    clock_t start;
+    // Descolorear grafo.
+    for (v = 0; v < G->nvertices; v++)
+        G->vertices[v].color = 0;
+    G->ncolores = 0;
 
-    start = clock();
+    for (u32 i = 0; i < G->delta_grande + 2; i++)
+        G->nvertices_color[i] = 0;
 
     // Colorear primer vértice con color 1
     G->vertices[G->orden[0]].color = 1;
+    G->nvertices_color[1]++;
 
     for (v = 1; v < G->nvertices; v++) {
+        vactual = G->orden[v];
+
         // Por cada vértice a partir del segundo (index 1), recorrer su lista
         // de vecinos buscando el color más chico de los vértices de los vecinos
         // tal que este color sea distinto a todos los usados por los vecinos.
@@ -591,66 +630,82 @@ u32 Greedy(NimheP G) {
         // En pocas palabras, buscar el color más chico no usado por vecinos.
 
         // Encontrar color.
-        G->vecinos[G->orden[v]] = neighbours_update(G, G->orden[v]);
-        color = neighbours_find_hole(G->vecinos[G->orden[v]], G->vertices[G->orden[v]].grado);
+        G->vecinos[vactual] = neighbours_update(G, vactual);
+        color = neighbours_find_hole(G->vecinos[vactual], G->vertices[vactual].grado);
 
         // Colorear vértice.
-        G->vertices[G->orden[v]].color = color;
+        G->vertices[vactual].color = color;
 
         // Aumentar arreglo de cantidad de vértices coloreados con "color".
         G->nvertices_color[color]++;
     }
 
-    printf("Delta grande: %u\n", G->delta_grande);
+    // Contar cuántos colores fueron usados.
     for (c = 1; c < G->delta_grande + 2; c++) {
-        if (!G->nvertices_color[c]) result++;
+        if (G->nvertices_color[c] != 0) G->ncolores++;
     }
 
-    printf("Greedy tardo: ");
-    print_time(start);
-
-    for (u32 i = 0; i < G->nvertices; i++) {
-        printf("Vecinos del vértice %u: ", G->vertices[G->orden[i]].nombre);
-        ImprimirVecinosDelVertice(G->vertices[G->orden[i]], G);
-    }
-
-    return (result);
+    return (G->ncolores);
 }
 
-void swap(u32* array, u32 left, u32 right) {
-    u32 temp = array[left];
-    array[left] = array[right];
-    array[right] = temp;
+
+/***********************************************************
+ *                                                         *
+ *              Funciones de ordenación.                   *
+ *                                                         *
+ ***********************************************************/
+
+static void swap(u32* array, u32 left, u32 right) {
+    /* Intercambia la posición de 2 números en un arreglo */
+    assert(array != NULL);
+
+    u32 temp;
+
+    temp = array[left];             // Ubicación temporal del valor izquierdo.
+    array[left] = array[right];     // Intercambio <-
+    array[right] = temp;            // Intercambio ->
 }
 
-bool compare(NimheP G, u32 left, u32 right, int orden) {
+bool compare(NimheP G, u32 left, u32 right, int orden, u32 color) {
+    assert(G != NULL);
+
     switch (orden) {
         case ORDENNATURAL:
             return G->vertices[G->orden[left]].nombre <= G->vertices[G->orden[right]].nombre;
         case WELSHPOWELL:
             return G->vertices[G->orden[left]].grado >= G->vertices[G->orden[right]].grado;
-        case REORDENALEATORIORESTRINGIDO:
-            return 0;
         case GRANDECHICO:
-            return 0;
+            return G->nvertices_color[G->vertices[G->orden[left]].color] >= G->nvertices_color[G->vertices[G->orden[right]].color];
         case CHICOGRANDE:
-            return 0;
+            return G->nvertices_color[G->vertices[G->orden[left]].color] <= G->nvertices_color[G->vertices[G->orden[right]].color];
         case REVIERTE:
-            return 0;
+            return G->vertices[G->orden[left]].color >= G->vertices[G->orden[right]].color;
+        case REORDENALEATORIORESTRINGIDO:
+            return G->vertices[G->orden[left]].color == color;
         default:
             return 0;
     }
 }
 
-u32 pivot(NimheP G, u32 left, u32 right, int orden) {
-    u32 i = left + 1;
-    u32 j = right;
-    u32 piv = left;
+u32 pivot(NimheP G, u32 left, u32 right, int orden, u32 color) {
+    u32 i = 0;
+    u32 j = 0;
+    u32 piv = 0;
+
+    // Elegir pivote aleatorio.
+    //srand(time(NULL)); // Cambiar semilla.
+    piv = (rand() % (right - left)) + left;
+    swap(G->orden, left, piv);
+
+    // Inicializar variables.
+    piv = left;
+    i = left + 1;
+    j = right;
 
     while (i <= j) {
-        if (compare(G, i, piv, orden)) {
+        if (compare(G, i, piv, orden, color)) {
             i = i + 1;
-        } else if (compare(G, piv, j, orden)) {
+        } else if (compare(G, piv, j, orden, color)) {
             j = j - 1;
         } else {
             swap(G->orden, i, j);
@@ -663,18 +718,18 @@ u32 pivot(NimheP G, u32 left, u32 right, int orden) {
     return j;
 }
 
-void quick_sort_rec(NimheP G, u32 left, u32 right, int orden) {
+void quick_sort_rec(NimheP G, u32 left, u32 right, int orden, u32 color) {
     u32 piv = 0;
 
     if (left < right) {
-        piv = pivot(G, left, right, orden);
-        if (piv) quick_sort_rec(G, left, piv - 1, orden);
-        quick_sort_rec(G, piv + 1, right, orden);
+        piv = pivot(G, left, right, orden, color);
+        if (piv != 0) quick_sort_rec(G, left, piv - 1, orden, color);
+        quick_sort_rec(G, piv + 1, right, orden, color);
     }
 }
 
 void quick_sort(NimheP G, int orden) {
-    quick_sort_rec(G, 0, G->nvertices - 1, orden);
+    quick_sort_rec(G, 0, G->nvertices - 1, orden, 0);
 }
 
 
@@ -687,7 +742,27 @@ void OrdenWelshPowell(NimheP G) {
 }
 
 void ReordenAleatorioRestringido(NimheP G) {
-    quick_sort(G, REORDENALEATORIORESTRINGIDO);
+    u32* rnd_colors = calloc(G->ncolores, sizeof(u32));
+    u32 nvertices_ordenados = 0;
+
+    // Inicializar arreglo de colores aleatorios.
+    for (u32 i = 0; i < G->ncolores; i++)
+        rnd_colors[i] = i + 1;
+
+    // Randomizar arreglo.
+    srand(time(NULL));
+    for (u32 i = 0; i < G->ncolores; i++)
+        swap(rnd_colors, i, (rand() % G->ncolores));
+
+    // Ordenar.
+    for (u32 i = 0; i < G->ncolores; i++) {
+        quick_sort_rec(G, nvertices_ordenados, G->nvertices - 1, REORDENALEATORIORESTRINGIDO, rnd_colors[i]);
+        nvertices_ordenados += G->nvertices_color[rnd_colors[i]];
+    }
+
+    // Liberar memoria usada.
+    free(rnd_colors);
+    rnd_colors = NULL;
 }
 
 void GrandeChico(NimheP G) {
@@ -702,4 +777,46 @@ void Revierte(NimheP G) {
     quick_sort(G, REVIERTE);
 }
 
-void OrdenEspecifico(NimheP G, u32* x);
+void OrdenEspecifico(NimheP G, u32* x) {
+    rb_tree_t tree = rb_new(); // Para saber si "x" cumple PRE condición.
+    u32* orden_natural; // Copia del orden natural.
+
+    /* Checkear que "x" sean todos los números entre 0 y n-1 sin repetir.
+     * Si no cumple esta condición, no modificar el orden de G. */
+    if (sizeof(x) == G->nvertices*sizeof(u32)) {
+        for (u32 i = 0; i < G->nvertices; i++) {
+            // Ver si números en "x" existen en árbol.
+            // Agregar números en "x" a árbol.
+            // Si existen, error con PRE condición.
+            if (!rb_exists(tree, x[i])) {
+                tree = rb_insert(tree, x[i], x[i]);
+            } else {
+                tree = rb_destroy(tree);
+                return;
+            }
+        }
+    }
+
+    // Si llegué hasta acá, "x" cumple PRE condición.
+    // Eliminar memoria usada por árbol.
+    tree = rb_destroy(tree);
+
+    // Ordenar con orden natural y guardar orden.
+    OrdenNatural(G);
+
+    orden_natural = calloc(G->nvertices, sizeof(u32));
+    //memcpy(orden_natural, G->orden, G->nvertices);
+    for (u32 u = 0; u < G->nvertices; u++) {
+        orden_natural[u] = G->orden[u];
+    }
+
+
+    // Ordenar con orden de "x".
+    for (u32 i = 0; i < G->nvertices; i++) {
+        G->orden[i] = orden_natural[x[i]];
+    }
+
+    // Liberar memoria usada por orden natural temporal.
+    free(orden_natural);
+    orden_natural = NULL;
+}

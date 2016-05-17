@@ -14,7 +14,7 @@ clean:
 	rm massif.*
 
 try:
-	$(OB)
+	time $(OB)
 
 valgrind:
 	time valgrind --show-reachable=yes --leak-check=full $(OB)

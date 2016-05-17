@@ -5,17 +5,21 @@
 
 #include "typedefs.h"
 
-#define ORDENNATURAL 10
-#define WELSHPOWELL 11
-#define REORDENALEATORIORESTRINGIDO 12
-#define GRANDECHICO 13
-#define CHICOGRANDE 14
-#define REVIERTE 15
+#define ORDENNATURAL 17
+#define WELSHPOWELL 16
+#define REORDENALEATORIORESTRINGIDO 15
+#define GRANDECHICO 14
+#define CHICOGRANDE 7
+#define REVIERTE 12
 
 
 typedef struct _neighbours_t *neighbours_t;
 typedef struct NimheSt *NimheP;
-typedef struct _vertex_t VerticeSt;
+typedef struct _vertex_t{
+   u32 nombre;
+   u32 grado;
+   u32 color;
+} VerticeSt;
 
 u32 ColorDelVertice(VerticeSt x);
 /* Devuelve el color con el que está coloreado el vértice x.
