@@ -12,12 +12,14 @@
 #include "graph.h"
 #include "rbtree.h"
 
+#define FACTOR_REALLOC 4
 
 struct _neighbours_t {
     bool* colors;       /* Arreglo de tamaño del total de vecinos.
                          * La posición indica el color. El valor indica si el color está usado. */
     u32* neighbours;    // Arreglo de vecinos.
     u32 size;           // Cantidad de vecinos.
+    u32 asize;
 };
 
 struct NimheSt{
@@ -30,15 +32,6 @@ struct NimheSt{
     VerticeSt* vertices;    // Arreglo de vértices en orden original.
     neighbours_t* vecinos;  // Arreglo de listas de vecinos de vértices.
 };
-
-void print_time(clock_t start){
-    int msec;
-    clock_t diff;
-
-    diff = clock() - start;
-    msec = diff * 1000 / CLOCKS_PER_SEC;
-    printf("%d seconds %d milliseconds.\n", msec/1000, msec%1000);
-}
 
 neighbours_t neighbours_empty() {
     neighbours_t neighbours = NULL;
@@ -83,9 +76,17 @@ u32 neighbours_i(neighbours_t neighbours, u32 i) {
 }
 
 neighbours_t neighbours_append(neighbours_t neighbours, u32 index) {
-    neighbours->neighbours = realloc(neighbours->neighbours, (neighbours->size + 1)*sizeof(u32));
-    neighbours->neighbours[neighbours->size] = index;
-    neighbours->size++;
+    if (neighbours->asize > neighbours->size) {
+        neighbours->neighbours[neighbours->size] = index;
+        neighbours->size++;
+    } else {
+        neighbours->asize += FACTOR_REALLOC;
+        neighbours->neighbours = realloc(neighbours->neighbours,
+                (neighbours->asize)*sizeof(u32));
+        neighbours->neighbours[neighbours->size] = index;
+        neighbours->size++;
+    }
+
     return (neighbours);
 }
 
@@ -240,7 +241,6 @@ NimheP NuevoNimhe() {
 
     // Proceso de lectura.
     char* line = NULL; // Línea leída.
-    char* error_lectura = "Error en formato de entrada\n"; // Mensaje de error.
     u32 nlados_leidos = 0; // Para saber cuántos lados llevo leídos.
 
     // ¿Existe el vértice?
@@ -255,10 +255,6 @@ NimheP NuevoNimhe() {
     u32 pos_vertice_nuevo = 0; // Para saber hasta donde insertar vértice nuevo.
     u32 i = 0; // Para inicializar estructura de vecinos de vértices.
 
-    // Para guardar la hora de inicio.
-    clock_t start;
-    start = clock();
-
     // Primero descartamos líneas de comentario, si existen.
     for (;;) {
         if ((line = readline_from_stdin()) != NULL) {
@@ -269,7 +265,6 @@ NimheP NuevoNimhe() {
             free(line);
             line = NULL;
         } else {
-            printf("%s", error_lectura);
             return NULL;
         }
     }
@@ -310,14 +305,12 @@ NimheP NuevoNimhe() {
                 // Línea empieza con 'p' pero no está bien formateada.
                 free(line);
                 line = NULL;
-                printf("%s", error_lectura);
                 return NULL;
             }
         } else {
             // Siguiente línea despues de comentarios no empieza con 'p'.
             free(line);
             line = NULL;
-            printf("%s", error_lectura);
             return NULL;
         }
         free(line);
@@ -375,7 +368,6 @@ NimheP NuevoNimhe() {
                         free(line);
                     } else {
                         // Me quedan lados por leer pero hubo error de lectura.
-                        printf("%s", error_lectura);
                         if (!DestruirNimhe(G)) {
                             printf("Mala destrucción del grafo.\n");
                         }
@@ -385,7 +377,6 @@ NimheP NuevoNimhe() {
                     }
                 } else {
                     // Me quedan lados por leer pero hubo error de lectura.
-                    printf("%s", error_lectura);
                     if (!DestruirNimhe(G)) {
                         printf("Mala destrucción del grafo.\n");
                     }
@@ -395,7 +386,6 @@ NimheP NuevoNimhe() {
                 }
             } else {
                 // Me quedan lados por leer pero hubo error de lectura.
-                printf("%s", error_lectura);
                 if (!DestruirNimhe(G)) {
                     printf("Mala destrucción del grafo.\n");
                 }
@@ -407,10 +397,6 @@ NimheP NuevoNimhe() {
     // Liberar árbol.
     tree = rb_destroy(tree);
     assert(tree == NULL);
-
-    // ¿Cuánto tardé en leer?
-    printf("Tarde en leer: ");
-    print_time(start);
 
     // Inicializo estructura de vecinos de cada vértice.
     // Obtengo delta grande del grafo.
@@ -654,96 +640,55 @@ u32 Greedy(NimheP G) {
  *              Funciones de ordenación.                   *
  *                                                         *
  ***********************************************************/
-
-static void swap(u32* array, u32 left, u32 right) {
-    /* Intercambia la posición de 2 números en un arreglo */
-    assert(array != NULL);
-
-    u32 temp;
-
-    temp = array[left];             // Ubicación temporal del valor izquierdo.
-    array[left] = array[right];     // Intercambio <-
-    array[right] = temp;            // Intercambio ->
+/*
+void show(NimheP G) {
+    for (u32 i = 0; i < G->nvertices; i++)
+        printf("vertice %u, color %u, grado %u\n", G->vertices[G->orden[i]].nombre, G->vertices[G->orden[i]].color, G->vertices[G->orden[i]].grado);
 }
-
-bool compare(NimheP G, u32 left, u32 right, int orden, u32 color) {
-    assert(G != NULL);
-
-    switch (orden) {
-        case ORDENNATURAL:
-            return G->vertices[G->orden[left]].nombre <= G->vertices[G->orden[right]].nombre;
-        case WELSHPOWELL:
-            return G->vertices[G->orden[left]].grado >= G->vertices[G->orden[right]].grado;
-        case GRANDECHICO:
-            return G->nvertices_color[G->vertices[G->orden[left]].color] >= G->nvertices_color[G->vertices[G->orden[right]].color];
-        case CHICOGRANDE:
-            return G->nvertices_color[G->vertices[G->orden[left]].color] <= G->nvertices_color[G->vertices[G->orden[right]].color];
-        case REVIERTE:
-            return G->vertices[G->orden[left]].color >= G->vertices[G->orden[right]].color;
-        case REORDENALEATORIORESTRINGIDO:
-            return G->vertices[G->orden[left]].color == color;
-        default:
-            return 0;
-    }
-}
-
-u32 pivot(NimheP G, u32 left, u32 right, int orden, u32 color) {
-    u32 i = 0;
-    u32 j = 0;
-    u32 piv = 0;
-
-    // Elegir pivote aleatorio.
-    //srand(time(NULL)); // Cambiar semilla.
-    piv = (rand() % (right - left)) + left;
-    swap(G->orden, left, piv);
-
-    // Inicializar variables.
-    piv = left;
-    i = left + 1;
-    j = right;
-
-    while (i <= j) {
-        if (compare(G, i, piv, orden, color)) {
-            i = i + 1;
-        } else if (compare(G, piv, j, orden, color)) {
-            j = j - 1;
-        } else {
-            swap(G->orden, i, j);
-            i = i + 1;
-            j = j - 1;
-        }
-    }
-    swap(G->orden, piv, j);
-
-    return j;
-}
-
-void quick_sort_rec(NimheP G, u32 left, u32 right, int orden, u32 color) {
-    u32 piv = 0;
-
-    if (left < right) {
-        piv = pivot(G, left, right, orden, color);
-        if (piv != 0) quick_sort_rec(G, left, piv - 1, orden, color);
-        quick_sort_rec(G, piv + 1, right, orden, color);
-    }
-}
-
-void quick_sort(NimheP G, int orden) {
-    quick_sort_rec(G, 0, G->nvertices - 1, orden, 0);
-}
-
+*/
 
 void OrdenNatural(NimheP G) {
-    quick_sort(G, ORDENNATURAL);
+    int cmp(const void* left, const void* right) {
+        u32 l = *(u32*) left;
+        u32 r = *(u32*) right;
+        u32 ln = G->vertices[l].nombre;
+        u32 rn = G->vertices[r].nombre;
+
+        if (ln < rn) return -1;
+        else if (ln > rn) return 1;
+
+        return 0;
+    }
+
+    qsort(G->orden, G->nvertices, sizeof(u32), cmp);
 }
 
+
 void OrdenWelshPowell(NimheP G) {
-    quick_sort(G, WELSHPOWELL);
+    int cmp(const void* left, const void* right) {
+        u32 l = *(u32*) left;
+        u32 r = *(u32*) right;
+        u32 dl = G->vertices[l].grado;
+        u32 dr = G->vertices[r].grado;
+
+        if (dl > dr) return -1;
+        else if (dl < dr) return 1;
+
+        return 0;
+    }
+
+    qsort(G->orden, G->nvertices, sizeof(u32), cmp);
+}
+
+static void swap(u32* array, u32 l, u32 r) {
+    u32 temp = array[l];
+    array[l] = array[r];
+    array[r] = temp;
 }
 
 void ReordenAleatorioRestringido(NimheP G) {
     u32* rnd_colors = calloc(G->ncolores, sizeof(u32));
-    u32 nvertices_ordenados = 0;
+    u32* tmp = calloc(G->ncolores, sizeof(u32));
 
     // Inicializar arreglo de colores aleatorios.
     for (u32 i = 0; i < G->ncolores; i++)
@@ -754,27 +699,88 @@ void ReordenAleatorioRestringido(NimheP G) {
     for (u32 i = 0; i < G->ncolores; i++)
         swap(rnd_colors, i, (rand() % G->ncolores));
 
-    // Ordenar.
     for (u32 i = 0; i < G->ncolores; i++) {
-        quick_sort_rec(G, nvertices_ordenados, G->nvertices - 1, REORDENALEATORIORESTRINGIDO, rnd_colors[i]);
-        nvertices_ordenados += G->nvertices_color[rnd_colors[i]];
+        tmp[rnd_colors[i] - 1] = i;
     }
 
-    // Liberar memoria usada.
     free(rnd_colors);
     rnd_colors = NULL;
+
+    // En tmp tengo, en la posición "i", su orden.
+    // i.e., tmp[4] == 2 y tmp[7] == 9 significa que el color 5 (4+1) está primero
+    // que el color 8 (7+1) ya que 2 < 9.
+
+    int cmp(const void* left, const void* right) {
+        u32 l = *(u32*) left;
+        u32 r = *(u32*) right;
+        u32 cl = G->vertices[l].color-1;
+        u32 cr = G->vertices[r].color-1;
+
+        if (tmp[cl] < tmp[cr]) return -1;
+        else if (tmp[cl] > tmp[cr]) return 1;
+
+        return 0;
+    }
+
+    qsort(G->orden, G->nvertices, sizeof(u32), cmp);
+
+    // Liberar memoria usada.
+    free(tmp);
+    tmp = NULL;
 }
 
 void GrandeChico(NimheP G) {
-    quick_sort(G, GRANDECHICO);
+    int cmp(const void* left, const void* right) {
+        u32 l = *(u32*) left;
+        u32 r = *(u32*) right;
+        u32 ncl = G->nvertices_color[G->vertices[l].color];
+        u32 ncr = G->nvertices_color[G->vertices[r].color];
+        u32 cl = G->vertices[l].color;
+        u32 cr = G->vertices[r].color;
+
+        if (ncl > ncr) return -1;
+        else if (ncl < ncr) return 1;
+        else if (cl < cr) return -1;
+        else if (cl > cr) return 1;
+        else return 0;
+    }
+
+    qsort(G->orden, G->nvertices, sizeof(u32), cmp);
 }
 
 void ChicoGrande(NimheP G) {
-    quick_sort(G, CHICOGRANDE);
+    int cmp(const void* left, const void* right) {
+        u32 l = *(u32*) left;
+        u32 r = *(u32*) right;
+        u32 ncl = G->nvertices_color[G->vertices[l].color];
+        u32 ncr = G->nvertices_color[G->vertices[r].color];
+        u32 cl = G->vertices[l].color;
+        u32 cr = G->vertices[r].color;
+
+        if (ncl < ncr) return -1;
+        else if (ncl > ncr) return 1;
+        else if (cl < cr) return -1;
+        else if (cl > cr) return 1;
+        else return 0;
+    }
+
+    qsort(G->orden, G->nvertices, sizeof(u32), cmp);
 }
 
 void Revierte(NimheP G) {
-    quick_sort(G, REVIERTE);
+    int cmp(const void* left, const void* right) {
+        u32 l = *(u32*) left;
+        u32 r = *(u32*) right;
+        u32 cl = G->vertices[l].color;
+        u32 cr = G->vertices[r].color;
+
+        if (cl > cr) return -1;
+        else if (cl < cr) return 1;
+
+        return 0;
+    }
+
+    qsort(G->orden, G->nvertices, sizeof(u32), cmp);
 }
 
 void OrdenEspecifico(NimheP G, u32* x) {

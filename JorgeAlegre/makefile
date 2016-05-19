@@ -17,7 +17,7 @@ try:
 	time $(OB)
 
 valgrind:
-	time valgrind --show-reachable=yes --leak-check=full $(OB)
+	valgrind --show-reachable=yes --leak-check=full $(OB)
 
 massif:
 	valgrind --tool=massif --time-unit=B $(OB)

@@ -12,27 +12,43 @@ struct _par_t {
     u32 r;
 };
 
+char* strstrip(char* s) {
+    size_t size;
+    char *end;
+
+    size = strlen(s);
+
+    if (!size)
+        return s;
+
+    end = s + size - 1;
+    while (end >= s && isspace(*end))
+        end--;
+    *(end + 1) = '\0';
+
+    while (*s && isspace(*s))
+        s++;
+
+    return s;
+}
+
 char* readline_from_stdin() {
     char* line = NULL; // String con lectura de stdin.
 
-    // Línea tendrá MAX_LINE_LENGTH caracteres más '\n' más '\0'.
-    line = calloc(MAX_LINE_LENGTH + 2, sizeof(char));
+    // Línea tendrá MAX_LINE_LENGTH caracteres más '\n'.
+    line = calloc(MAX_LINE_LENGTH + 1, sizeof(char));
     assert(line != NULL); // Asegurar que se pudo pedir memoria.
 
     // Leer de stdin.
-    if (fgets(line, MAX_LINE_LENGTH + 2, stdin) != NULL) {
-        // Si hay un \n en el string, el input fue de tamaño correcto.
-        if (line[strlen(line) - 1] == '\n') {
-            line[strlen(line) - 1] = '\0'; // Eliminar '\n'.
-        } else {
+    if (fgets(line, MAX_LINE_LENGTH + 1, stdin) != NULL) {
+        if (line[strlen(line) - 1] != '\n') {
             // Línea no cumple con formato. Libero memoria y devuelvo NULL.
             free(line);
             line = NULL;
         }
     }
 
-    assert(strlen(line) <= 80);
-    return (line);
+    return (strstrip(line));
 }
 
 char* strcopy(const char* string) {

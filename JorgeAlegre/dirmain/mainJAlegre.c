@@ -3,6 +3,9 @@
 #include "graph.h"
 #include <time.h>
 
+#define NCORRIDAS_RND 10
+#define NCORRIDAS 1000
+
 u32 min(u32 a, u32 b) {
     if (a <= b) return a;
     else return b;
@@ -56,12 +59,12 @@ int main() {
 
 
     // Crear ordenes aleatorios.
-    orden = calloc(10, sizeof(u32*));
+    orden = calloc(NCORRIDAS_RND, sizeof(u32*));
     nvertices = NumeroDeVertices(grafo);
     min_ncromatico = nvertices + 1;
     //srand(time(NULL));
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < NCORRIDAS_RND; i++) {
         orden[i] = calloc(nvertices, sizeof(u32));
         for (u32 j = 0; j < nvertices; j++) {
             orden[i][j] = j;
@@ -72,8 +75,8 @@ int main() {
     }
 
     // Correr Greedy sobre grafo.
-    // 10 veces con orden aleatorio.
-    for (int i = 0; i < 10; i++) {
+    // NCORRIDAS_RND veces con orden aleatorio.
+    for (int i = 0; i < NCORRIDAS_RND; i++) {
         // Ordenar vértices del grafo.
         OrdenEspecifico(grafo, orden[i]);
 
@@ -97,9 +100,7 @@ int main() {
 
     // 1 vez con orden Welsh-Powell.
     // Ordenar vértices del grafo.
-    printf("Empece WelshPowel\n");
     OrdenWelshPowell(grafo);
-    printf("Termine WelshPowel\n");
 
     // Obtener número cromático.
     ncromatico = Greedy(grafo);
@@ -122,20 +123,16 @@ int main() {
         // Si Welsh Powell no dió mejor número cromatico, reordenar.
         OrdenEspecifico(grafo, orden[ncorrida_min_coloreo]);
         min_ncromatico = Greedy(grafo);
-
-        //DEBUG
-        printf("Numero de corrida elegida %d.\n", ncorrida_min_coloreo);
-        printf("Numero cromatico que dió: %u.\n", min_ncromatico);
     }
 
     // Ya no necesito más el orden de las corridas. Liberar memoria.
     DestruirOrden(orden);
 
-    // X(G) > 3. Comenzar Greedy iterado 1001 veces.
-    printf("\n====Comenzando Greedy Iterado 1001 veces====\n\n");
+    // X(G) > 3. Comenzar Greedy iterado NCORRIDAS + 1 veces.
+    printf("\n====Comenzando Greedy Iterado %d veces====\n\n", NCORRIDAS+1);
 
-    // Correr Greedy 1000.
-    for (int i = 0; i < 1000; i++) {
+    // Correr Greedy NCORRIDAS veces.
+    for (int i = 0; i < NCORRIDAS; i++) {
         // Elegir orden y ordenar.
         opcion = (rand() % 16);
 
@@ -155,23 +152,21 @@ int main() {
 
         // Correr Greedy sobre orden.
         ncromatico = Greedy(grafo);
-        printf("%d. Greedy sobre el grafo: %u\n", i + 1, ncromatico);
         min_ncromatico = min(min_ncromatico, ncromatico);
     }
 
     // Correr Greedy 1 vez con orden Revierte.
     Revierte(grafo);
     ncromatico = Greedy(grafo);
-    printf("1001. Greedy sobre el grafo: %u\n", ncromatico);
     min_ncromatico = min(min_ncromatico, ncromatico);
     nR++;
 
 
     // Imprimir resultados a usuario.
-    printf("Mejor coloreo con Greedy iterado 1001 veces: %u colores\n", min_ncromatico);
+    printf("Mejor coloreo con Greedy iterado %d veces: %u colores\n", NCORRIDAS+1, min_ncromatico);
     printf("(%d CG,%d GC,%d R,%d RAR)\n", nCG, nGC, nR, nRAR);
 
     // Destruir grafo.
-    if (!DestruirNimhe(grafo)) printf("Todo mal.\n");
-    return 0;
+    return !DestruirNimhe(grafo);
 }
+
