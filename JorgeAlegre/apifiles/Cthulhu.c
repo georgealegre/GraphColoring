@@ -9,10 +9,10 @@
 
 #include "helpers.h"
 #include "u32queue.h"
-#include "graph.h"
+#include "Cthulhu.h"
 #include "rbtree.h"
 
-#define FACTOR_REALLOC 4
+#define FACTOR_REALLOC 8
 
 struct _neighbours_t {
     bool* colors;       /* Arreglo de tamaño del total de vecinos.
@@ -27,11 +27,14 @@ struct NimheSt{
     u32 nlados; // Número de lados en el grafo.
     u32 ncolores; // Número de colores usados hasta el momento para el coloreo propio.
     u32* orden; // String del orden del grafo.
+    u32* orden_natural;
     u32 delta_grande;
     u32* nvertices_color;   // El valor en la posición "i" = # de vértices de color "i".
     VerticeSt* vertices;    // Arreglo de vértices en orden original.
     neighbours_t* vecinos;  // Arreglo de listas de vecinos de vértices.
 };
+
+static NimheP grafo = NULL;
 
 neighbours_t neighbours_empty() {
     neighbours_t neighbours = NULL;
@@ -56,13 +59,13 @@ neighbours_t neighbours_destroy(neighbours_t neighbours) {
             free(neighbours->neighbours);
             neighbours->neighbours = NULL;
         }
-
-        // Eliminamos bool vector.
+	   
+	   // Eliminamos bool vector.
         if (neighbours->colors != NULL) {
             free(neighbours->colors);
             neighbours->colors = NULL;
         }
-
+        
         // Eliminamos estructura completa.
         free(neighbours);
         neighbours = NULL;
@@ -91,38 +94,30 @@ neighbours_t neighbours_append(neighbours_t neighbours, u32 index) {
 }
 
 u32 neighbours_find_hole(neighbours_t neighbours, u32 grado) {
-    u32 result = 0;
     u32 i = 0; // Iterador de vecinos.
 
     /* Índice 0 indica color 1, índice 1 indica color 2, ...,
-    índice (size - 1) indica color "size". */
+     * índice (size - 1) indica color "size". */
 
-    for (i = 0; i < grado && !result; i++) {
-        if (!neighbours->colors[i]) {
-            result = i + 1;
-        }
+    for (i = 0; i < grado; i++) {
+        if (!neighbours->colors[i])
+            return (i + 1);
     }
 
     // Por cota superior de greedy.
-    if (!result) {
-        result = grado + 1;
-    }
-
-    return (result);
+    return (grado + 1);
 }
 
 neighbours_t neighbours_update(NimheP G, u32 vertex) {
     u32 i = 0;
     u32 color_vecino = 0;
 
-    for (u32 j = 0; j < G->vertices[vertex].grado; j++) {
-        G->vecinos[vertex]->colors[j] = false;
-    }
+    memset(G->vecinos[vertex]->colors, 0, (G->vertices[vertex].grado)*sizeof(bool));
 
     for (i = 0; i < G->vertices[vertex].grado; i++) {
         color_vecino = G->vertices[neighbours_i(G->vecinos[vertex], i)].color;
         if (color_vecino && color_vecino <= G->vertices[vertex].grado) {
-            // En palabras: si el color del vértice vecino "i" de "vertex"
+            // En palabras: si el color del vÃ©rtice vecino "i" de "vertex"
             // es menor al grado de "vertex" y es mayor que 0, marcar el color
             // como usado.
             G->vecinos[vertex]->colors[color_vecino - 1] = true;
@@ -242,6 +237,7 @@ NimheP NuevoNimhe() {
     // Proceso de lectura.
     char* line = NULL; // Línea leída.
     u32 nlados_leidos = 0; // Para saber cuántos lados llevo leídos.
+    u32 nvertices_leidos = 0; // Para ver vértices aislados.
 
     // ¿Existe el vértice?
     rb_tree_t tree = NULL; // Arbol con vértices que leo.
@@ -282,6 +278,11 @@ NimheP NuevoNimhe() {
                 G->nvertices = get_l(par);
                 G->nlados = get_r(par);
                 nlados = get_r(par);
+                // Se setea a la cantidad de vértices que tiene el grafo.
+                // A medida que leo un vértice nuevo, decremento por 1.
+                // Al final, nvertices_leidos debería valer 0.
+                // Sino, error en formato de entrada.
+                nvertices_leidos = get_l(par);
 
                 // Ya terminé de usar datos de línea leída
                 free(par);
@@ -298,7 +299,7 @@ NimheP NuevoNimhe() {
                 assert(G->orden != NULL);
                 for (i = 0; i < G->nvertices; i++)
                     G->orden[i] = i;
-
+	
                 // Inicializo árbol de vértices leídos.
                 tree = rb_new();
             } else {
@@ -331,26 +332,31 @@ NimheP NuevoNimhe() {
 
                         // Reviso si vértice izquierdo ya existe.
                         existel = rb_exists(tree, lvertice);
-                        pos_lv = 0;
-                        // Si existe, decime donde.
-                        // Si no existe, agregalo al árbol de vértices junto con su posición.
-                        if (existel)
+                        if (existel) {
+                            // Si existe, decime donde.
                             pos_lv = rb_search(tree, lvertice);
-                        else
+                        } else {
+                            // Si no existe, agregalo al árbol de vértices
+                            // junto con su posición nueva.
+                            // Decrementar por 1 nvertices leidos.
+                            nvertices_leidos--;
                             tree = rb_insert(tree, lvertice, pos_vertice_nuevo);
+                        }
 
                         // Reviso si vértice derecho ya existe.
                         exister = rb_exists(tree, rvertice);
-                        pos_rv = 0;
-                        // Si existe, decime donde.
-                        // Si no existe, su posición nueva depende de
-                        // si vértice izquiero es nuevo o no.
-                        if (exister)
+                        if (exister) {
+                            // Si existe, decime donde.
                             pos_rv = rb_search(tree, rvertice);
-                        else if (existel)
+                        } else if (existel) {
+                            // Si no existe, su posición nueva depende de
+                            // si vértice izquiero es nuevo o no.
                             tree = rb_insert(tree, rvertice, pos_vertice_nuevo);
-                        else
+                            nvertices_leidos--;
+                        } else {
                             tree = rb_insert(tree, rvertice, pos_vertice_nuevo + 1);
+                            nvertices_leidos--;
+                        }
 
                         // Agrego vértices según corresponda.
                         G = agregar_vertices(G,
@@ -398,7 +404,14 @@ NimheP NuevoNimhe() {
     tree = rb_destroy(tree);
     assert(tree == NULL);
 
-    // Inicializo estructura de vecinos de cada vértice.
+    // Ver vertices aislados.
+    if (nvertices_leidos) {
+        if (!DestruirNimhe(G)) {
+            printf("Mala destrucción del grafo.\n");
+        }
+        return NULL;
+    }
+
     // Obtengo delta grande del grafo.
     if (G != NULL) {
         for (i = 0; i < G->nvertices; i++) {
@@ -415,6 +428,8 @@ NimheP NuevoNimhe() {
 
         G->delta_grande = delta_grande;
     }
+
+    grafo = G;
 
     return (G);
 }
@@ -442,12 +457,17 @@ int DestruirNimhe(NimheP G) {
             free(G->orden);
             G->orden = NULL;
         }
-
+        // Destruir orden natural.
+        if (G->orden_natural != NULL) {
+            free(G->orden_natural);
+            G->orden_natural = NULL;
+        }
         // Destruir arreglo de colores usados.
         if (G->nvertices_color != NULL) {
             free(G->nvertices_color);
             G->nvertices_color = NULL;
         }
+        grafo = NULL;
         // Destruir grafo.
         free(G);
         G = NULL;
@@ -590,28 +610,21 @@ int Chidos(NimheP G) {
 
 u32 Greedy(NimheP G) {
     u32 vactual = 0; // Posición del vértice sobre el cual se esta trabajando.
-    u32 v = 0; // Iterador de vértices.
     u32 color = 0; // Color asignado a cada vértice en iteración.
-    u32 c = 0; // Iterador de colores.
 
     // Descolorear grafo.
-    for (v = 0; v < G->nvertices; v++)
-        G->vertices[v].color = 0;
-    G->ncolores = 0;
-
-    for (u32 i = 0; i < G->delta_grande + 2; i++)
-        G->nvertices_color[i] = 0;
+    for (u32 v = G->nvertices; v != 0; v--)
+        G->vertices[v-1].color = 0;
+   
+    // Limpiar colores usados.
+    memset(G->nvertices_color, 0, (G->delta_grande + 2)*sizeof(u32));
 
     // Colorear primer vértice con color 1
     G->vertices[G->orden[0]].color = 1;
     G->nvertices_color[1]++;
-
-    for (v = 1; v < G->nvertices; v++) {
+   
+    for (u32 v = 1; v < G->nvertices; v++) {
         vactual = G->orden[v];
-
-        // Por cada vértice a partir del segundo (index 1), recorrer su lista
-        // de vecinos buscando el color más chico de los vértices de los vecinos
-        // tal que este color sea distinto a todos los usados por los vecinos.
 
         // En pocas palabras, buscar el color más chico no usado por vecinos.
 
@@ -627,8 +640,11 @@ u32 Greedy(NimheP G) {
     }
 
     // Contar cuántos colores fueron usados.
-    for (c = 1; c < G->delta_grande + 2; c++) {
-        if (G->nvertices_color[c] != 0) G->ncolores++;
+    for (u32 c = G->delta_grande + 1; c != 1; c--) {
+        if (G->nvertices_color[c] != 0) {
+           G->ncolores = c;
+           return (c);
+        }
     }
 
     return (G->ncolores);
@@ -647,48 +663,61 @@ void show(NimheP G) {
 }
 */
 
-void OrdenNatural(NimheP G) {
-    int cmp(const void* left, const void* right) {
-        u32 l = *(u32*) left;
-        u32 r = *(u32*) right;
-        u32 ln = G->vertices[l].nombre;
-        u32 rn = G->vertices[r].nombre;
+int cmp_nat(const void* left, const void* right) {
+    u32 l = *(u32*) left;
+    u32 r = *(u32*) right;
+    u32 ln = grafo->vertices[l].nombre;
+    u32 rn = grafo->vertices[r].nombre;
 
-        if (ln < rn) return -1;
-        else if (ln > rn) return 1;
+    if (ln < rn) return -1; 
+    else if (ln > rn) return 1;
 
-        return 0;
-    }
-
-    qsort(G->orden, G->nvertices, sizeof(u32), cmp);
+    return 0;
 }
 
+void OrdenNatural(NimheP G) {
+    qsort(G->orden, G->nvertices, sizeof(u32), cmp_nat);
+}
+
+int cmp_wp(const void* left, const void* right) {
+    u32 l = *(u32*) left;
+    u32 r = *(u32*) right;
+    u32 dl = grafo->vertices[l].grado;
+    u32 dr = grafo->vertices[r].grado;
+
+    if (dl > dr) return -1;
+    else if (dl < dr) return 1;
+
+    return 0;
+}
 
 void OrdenWelshPowell(NimheP G) {
-    int cmp(const void* left, const void* right) {
-        u32 l = *(u32*) left;
-        u32 r = *(u32*) right;
-        u32 dl = G->vertices[l].grado;
-        u32 dr = G->vertices[r].grado;
-
-        if (dl > dr) return -1;
-        else if (dl < dr) return 1;
-
-        return 0;
-    }
-
-    qsort(G->orden, G->nvertices, sizeof(u32), cmp);
+    qsort(G->orden, G->nvertices, sizeof(u32), cmp_wp);
 }
 
-static void swap(u32* array, u32 l, u32 r) {
+static inline void swap(u32* array, u32 l, u32 r) {
     u32 temp = array[l];
     array[l] = array[r];
     array[r] = temp;
 }
 
+static u32* tmp;
+
+int cmp_rar(const void* left, const void* right) {
+    u32 l = *(u32*) left;
+    u32 r = *(u32*) right;
+    u32 cl = grafo->vertices[l].color-1;
+    u32 cr = grafo->vertices[r].color-1;
+
+    if (tmp[cl] < tmp[cr]) return -1;
+    else if (tmp[cl] > tmp[cr]) return 1;
+
+    return 0;
+}
+
 void ReordenAleatorioRestringido(NimheP G) {
     u32* rnd_colors = calloc(G->ncolores, sizeof(u32));
-    u32* tmp = calloc(G->ncolores, sizeof(u32));
+    tmp = calloc(G->ncolores, sizeof(u32));
 
     // Inicializar arreglo de colores aleatorios.
     for (u32 i = 0; i < G->ncolores; i++)
@@ -710,82 +739,70 @@ void ReordenAleatorioRestringido(NimheP G) {
     // i.e., tmp[4] == 2 y tmp[7] == 9 significa que el color 5 (4+1) está primero
     // que el color 8 (7+1) ya que 2 < 9.
 
-    int cmp(const void* left, const void* right) {
-        u32 l = *(u32*) left;
-        u32 r = *(u32*) right;
-        u32 cl = G->vertices[l].color-1;
-        u32 cr = G->vertices[r].color-1;
 
-        if (tmp[cl] < tmp[cr]) return -1;
-        else if (tmp[cl] > tmp[cr]) return 1;
-
-        return 0;
-    }
-
-    qsort(G->orden, G->nvertices, sizeof(u32), cmp);
+    qsort(G->orden, G->nvertices, sizeof(u32), cmp_rar);
 
     // Liberar memoria usada.
     free(tmp);
     tmp = NULL;
 }
 
+int cmp_gc(const void* left, const void* right) {
+    u32 l = *(u32*) left;
+    u32 r = *(u32*) right;
+    u32 ncl = grafo->nvertices_color[grafo->vertices[l].color];
+    u32 ncr = grafo->nvertices_color[grafo->vertices[r].color];
+    u32 cl = grafo->vertices[l].color;
+    u32 cr = grafo->vertices[r].color;
+
+    if (ncl > ncr) return -1;
+    else if (ncl < ncr) return 1;
+    else if (cl < cr) return -1;
+    else if (cl > cr) return 1;
+    else return 0;
+}
+
 void GrandeChico(NimheP G) {
-    int cmp(const void* left, const void* right) {
-        u32 l = *(u32*) left;
-        u32 r = *(u32*) right;
-        u32 ncl = G->nvertices_color[G->vertices[l].color];
-        u32 ncr = G->nvertices_color[G->vertices[r].color];
-        u32 cl = G->vertices[l].color;
-        u32 cr = G->vertices[r].color;
+    qsort(G->orden, G->nvertices, sizeof(u32), cmp_gc);
+}
 
-        if (ncl > ncr) return -1;
-        else if (ncl < ncr) return 1;
-        else if (cl < cr) return -1;
-        else if (cl > cr) return 1;
-        else return 0;
-    }
+int cmp_cg(const void* left, const void* right) {
+    u32 l = *(u32*) left;
+    u32 r = *(u32*) right;
+    u32 ncl = grafo->nvertices_color[grafo->vertices[l].color];
+    u32 ncr = grafo->nvertices_color[grafo->vertices[r].color];
+    u32 cl = grafo->vertices[l].color;
+    u32 cr = grafo->vertices[r].color;
 
-    qsort(G->orden, G->nvertices, sizeof(u32), cmp);
+    if (ncl < ncr) return -1;
+    else if (ncl > ncr) return 1;
+    else if (cl < cr) return -1;
+    else if (cl > cr) return 1;
+    else return 0;
 }
 
 void ChicoGrande(NimheP G) {
-    int cmp(const void* left, const void* right) {
-        u32 l = *(u32*) left;
-        u32 r = *(u32*) right;
-        u32 ncl = G->nvertices_color[G->vertices[l].color];
-        u32 ncr = G->nvertices_color[G->vertices[r].color];
-        u32 cl = G->vertices[l].color;
-        u32 cr = G->vertices[r].color;
+    qsort(G->orden, G->nvertices, sizeof(u32), cmp_cg);
+}
 
-        if (ncl < ncr) return -1;
-        else if (ncl > ncr) return 1;
-        else if (cl < cr) return -1;
-        else if (cl > cr) return 1;
-        else return 0;
-    }
+int cmp_r(const void* left, const void* right) {
+    u32 l = *(u32*) left;
+    u32 r = *(u32*) right;
+    u32 cl = grafo->vertices[l].color;
+    u32 cr = grafo->vertices[r].color;
 
-    qsort(G->orden, G->nvertices, sizeof(u32), cmp);
+    if (cl > cr) return -1;
+    else if (cl < cr) return 1;
+
+    return 0;
 }
 
 void Revierte(NimheP G) {
-    int cmp(const void* left, const void* right) {
-        u32 l = *(u32*) left;
-        u32 r = *(u32*) right;
-        u32 cl = G->vertices[l].color;
-        u32 cr = G->vertices[r].color;
-
-        if (cl > cr) return -1;
-        else if (cl < cr) return 1;
-
-        return 0;
-    }
-
-    qsort(G->orden, G->nvertices, sizeof(u32), cmp);
+    qsort(G->orden, G->nvertices, sizeof(u32), cmp_r);
 }
 
 void OrdenEspecifico(NimheP G, u32* x) {
     rb_tree_t tree = rb_new(); // Para saber si "x" cumple PRE condición.
-    u32* orden_natural; // Copia del orden natural.
 
     /* Checkear que "x" sean todos los números entre 0 y n-1 sin repetir.
      * Si no cumple esta condición, no modificar el orden de G. */
@@ -808,21 +825,14 @@ void OrdenEspecifico(NimheP G, u32* x) {
     tree = rb_destroy(tree);
 
     // Ordenar con orden natural y guardar orden.
-    OrdenNatural(G);
-
-    orden_natural = calloc(G->nvertices, sizeof(u32));
-    //memcpy(orden_natural, G->orden, G->nvertices);
-    for (u32 u = 0; u < G->nvertices; u++) {
-        orden_natural[u] = G->orden[u];
+    if (G->orden_natural == NULL) {
+        OrdenNatural(G);
+        G->orden_natural = calloc(G->nvertices, sizeof(u32));
+        memcpy(G->orden_natural, G->orden, G->nvertices*sizeof(u32));
     }
-
 
     // Ordenar con orden de "x".
     for (u32 i = 0; i < G->nvertices; i++) {
-        G->orden[i] = orden_natural[x[i]];
+        G->orden[i] = G->orden_natural[x[i]];
     }
-
-    // Liberar memoria usada por orden natural temporal.
-    free(orden_natural);
-    orden_natural = NULL;
 }

@@ -1,6 +1,2 @@
-Ver vertices aislados
-Sacar nvertices color 0.
-Mejorar orden especifico.
 Mejorar rand.
 Mejorar el uso de los arreglos aleatorios.
-Arreglar el uso de qsort.

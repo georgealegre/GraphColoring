@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "graph.h"
+#include "Cthulhu.h"
+
 #include <time.h>
 
 #define NCORRIDAS_RND 10
@@ -30,9 +31,9 @@ void swap(u32* array, u32 left, u32 right) {
 
 int main() {
     NimheP grafo = NULL; // Ubicación de grafo.
-    u32** orden = NULL;
+    u32* mejor_orden = NULL;
+    u32* orden_actual = NULL;
     u32 nvertices = 0;
-    int ncorrida_min_coloreo = 0;
     u32 ncromatico = 0; // Resultado de correr Greedy sobre el grafo.
     u32 min_ncromatico = 0;
     char* error_message = "Error en formato de entrada.\n"; // Imprimir por error de lectura.
@@ -59,26 +60,26 @@ int main() {
 
 
     // Crear ordenes aleatorios.
-    orden = calloc(NCORRIDAS_RND, sizeof(u32*));
+    //orden = calloc(NCORRIDAS_RND, sizeof(u32*));
     nvertices = NumeroDeVertices(grafo);
     min_ncromatico = nvertices + 1;
     //srand(time(NULL));
 
-    for (int i = 0; i < NCORRIDAS_RND; i++) {
-        orden[i] = calloc(nvertices, sizeof(u32));
-        for (u32 j = 0; j < nvertices; j++) {
-            orden[i][j] = j;
-        }
-        for (u32 j = 0; j < nvertices; j++) {
-            swap(orden[i], j, (rand() % nvertices));
-        }
-    }
-
     // Correr Greedy sobre grafo.
     // NCORRIDAS_RND veces con orden aleatorio.
+    
+    // Crear primer orden.
+    mejor_orden = calloc(nvertices, sizeof(u32));
+    orden_actual = calloc(nvertices, sizeof(u32));
+    for (u32 j = nvertices; j != 0; j--)
+        orden_actual[j - 1] = j - 1;
+
     for (int i = 0; i < NCORRIDAS_RND; i++) {
+        for (u32 j = nvertices; j != 0; j--)
+	    swap(orden_actual, j, (rand() % nvertices));
+
         // Ordenar vértices del grafo.
-        OrdenEspecifico(grafo, orden[i]);
+        OrdenEspecifico(grafo, orden_actual);
 
         // Obtenemos el coloreo devuelvo por Greedy.
         ncromatico = Greedy(grafo);
@@ -89,14 +90,21 @@ int main() {
         // Si número cromático es 3, detener corrida.
         if (ncromatico == 3) {
             printf("X(G)=3\n");
-            DestruirOrden(orden);
+	    free(orden_actual);
+	    orden_actual = NULL;
+	    if (mejor_orden != NULL)
+	        free(mejor_orden);
+	    mejor_orden = NULL;
             return !DestruirNimhe(grafo);
         }
 
         min_ncromatico = min(min_ncromatico, ncromatico);
-        if (min_ncromatico == ncromatico) ncorrida_min_coloreo = i;
+        if (min_ncromatico == ncromatico)
+	    for (u32 i = nvertices; i != 0; i--)
+		mejor_orden[i] = orden_actual[i];
     }
-
+    free(orden_actual);
+    orden_actual = NULL;
 
     // 1 vez con orden Welsh-Powell.
     // Ordenar vértices del grafo.
@@ -106,12 +114,16 @@ int main() {
     ncromatico = Greedy(grafo);
 
     // Imprimir resultado.
-    printf(" coloreo con Greedy en WelshPowell:%u colores\n", ncromatico);
+    printf("\n coloreo con Greedy en WelshPowell: %u colores\n", ncromatico);
 
     // Si número cromático es 3, detener corrida.
     if (ncromatico == 3) {
         printf("X(G)=3\n");
-        DestruirOrden(orden);
+	free(orden_actual);
+	orden_actual = NULL;
+	if (mejor_orden != NULL)
+	    free(mejor_orden);
+	mejor_orden = NULL;
         return !DestruirNimhe(grafo);
     }
 
@@ -121,12 +133,13 @@ int main() {
     // el orden que dió el menor coloreo de las primeras 10 iteraciones.
     if (min_ncromatico != ncromatico) {
         // Si Welsh Powell no dió mejor número cromatico, reordenar.
-        OrdenEspecifico(grafo, orden[ncorrida_min_coloreo]);
+        OrdenEspecifico(grafo, mejor_orden);
         min_ncromatico = Greedy(grafo);
     }
 
     // Ya no necesito más el orden de las corridas. Liberar memoria.
-    DestruirOrden(orden);
+    free(mejor_orden);
+    mejor_orden = NULL;
 
     // X(G) > 3. Comenzar Greedy iterado NCORRIDAS + 1 veces.
     printf("\n====Comenzando Greedy Iterado %d veces====\n\n", NCORRIDAS+1);
@@ -152,6 +165,7 @@ int main() {
 
         // Correr Greedy sobre orden.
         ncromatico = Greedy(grafo);
+        printf("%d. Greedy sobre el grafo: %u.\n", i+1, ncromatico);
         min_ncromatico = min(min_ncromatico, ncromatico);
     }
 
