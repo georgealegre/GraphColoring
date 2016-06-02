@@ -1,7 +1,7 @@
 // Autores:
 // Alegre, Jorge Facundo <facu.alegre@gmail.com>
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef CTHULHU_H
+#define CTHULHU_H
 
 #include "typedefs.h"
 
@@ -11,7 +11,6 @@
 #define GRANDECHICO 14
 #define CHICOGRANDE 7
 #define REVIERTE 12
-
 
 typedef struct _neighbours_t *neighbours_t;
 typedef struct NimheSt *NimheP;

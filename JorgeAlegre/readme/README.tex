@@ -1,0 +1,429 @@
+\documentclass[11pt]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   		% ... or a4paper or a5paper or ... 
+\usepackage{graphicx}				% Use pdf, png, jpg, or epsÂ§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+
+\usepackage[spanish]{babel}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern} 				% load a font with all the characters
+
+\usepackage{listings}
+\lstdefinestyle{custombash}{
+language=bash,
+breaklines=true,
+basicstyle=\ttfamily}
+
+\lstdefinestyle{customC}{
+language=C,
+breaklines=true,
+basicstyle=\ttfamily}
+
+%SetFonts
+
+%SetFonts
+
+
+\title{\vspace*{\fill}Matemática Discreta II}
+\author{Alegre, Jorge Facundo}
+\date{\today}
+
+\begin{document}
+
+\topskip0pt
+\maketitle
+\thispagestyle{empty}
+\begin{center}
+Presentación - Proyecto, primera parte.
+\end{center}
+\vspace*{\fill}
+\clearpage
+
+\tableofcontents
+\clearpage
+
+\section{Introducción}
+El siguiente documento detalla la implementación de un programa escrito en C para encontrar una cantidad
+de colores que alcanzan para colorear de manera propia un grafo con el algoritmo Greedy de coloreo.
+Vale aclarar que el programa \textbf{no indica cómo colorear el grafo}, solo indica cuantos colores se
+pueden usar para colorearlo de forma propia.
+
+En el documento encontrará una explicación de cómo compilar y ejecutar el programa, 
+estructura elegida para el código, tipos de datos creados y decisiones de diseño
+tomadas a lo largo de su desarrollo.
+Además, puede encontrar respuestas a preguntas comunes que podrían surgir.
+Por último, contendrá estadísticas de su comportamiento al ser ejecutado con distintos grafos de entrada.
+
+El programa recibe un grafo en formato DIMACS (con algunas modificaciones TODO: agregar referencia). Después
+de verificar que el formato de entrada se respete, el programa procede a verificar que $\chi(grafo)\neq2$. Si
+es así, se crean 10 órdenes aleatorios para los vértices del grafo y se corre el algoritmo Greedy
+sucesivamente. Luego, se ordena el grafo de forma decreciente con respecto al grado de cada vértice (orden
+Welsh Powell) y se vuelve a correr Greedy. Si alguno de estos 11 órdenes colorea
+el grafo con 3 colores (i.e., $\chi(grafo)=3$) la ejecución del programa se detiene.
+
+En caso contrario, se vuelve a ordenar el grafo con el orden que produjo el mejor coloreo de las 11
+iteraciones. Luego, comienzan
+1001 iteraciones de ordenar y colorear el grafo. En estas iteraciones, el grafo se ordenará según sus
+colores. Un teorema de coloreo de grafos prueba que al colorear un grafo con Greedy, si luego se lo ordena
+según sus colores, volver a colorearlo con Greedy dará un coloreo con una cantidad de colores menor o igual
+que el coloreo anterior. Los órdenes son Revierte, ChicoGrande, GrandeChico y ReordenAleatorioRestringido.
+Serán explicados con mayor detalle. Estos órdenes son elegidos al azar, pero con distintas probabilidades
+de ser elegidos, para las primeras 1000 iteraciones. La última siempre será Revierte.
+
+Finalmente, se imprime por \texttt{STDOUT} el mejor coloreo obtenido y la cantidad de veces que se ordenó
+con cada orden.
+\clearpage
+
+\section{Como compilar y usar}
+Correr el siguiente comando, situados en el directorio \texttt{JorgeAlegre/}:
+\lstset{style=custombash}
+\begin{lstlisting}
+$ gcc -Wall -Wextra -03 -std=c99 -Iapifiles 
+   dirmain/mainJAlegre.c apifiles/*.c -o dirmain/color
+\end{lstlisting}
+
+Para correr el programa, simplemente lo ejecutamos de la siguiente forma:
+\begin{lstlisting}
+$ dirmain/color
+\end{lstlisting}
+En este momento, podemos ingresar los datos del grafo en el formato especificado. El programa
+solo recibe datos por \texttt{STDIN}.
+
+Si poseemos un grafo en un archivo, se lo puede cargar directamente de la siguiente forma:
+\begin{lstlisting}
+$ dirmain/color < archivo_de_grafo
+\end{lstlisting}
+
+Luego de cargar un grafo, el programa puede devolver un error ocasionado por un grafo de entrada
+que no respeta el formato especificado o puede devolver el resultado de su corrida por \texttt{STDOUT}.
+\clearpage
+
+\section{Estructura del código}
+\subsection{\texttt{apifiles/}}
+La mayor parte del código se encuentra ubicado en el archivo \texttt{Cthulhu.c}. Esto es así porque
+la mayoría de las funciones implementadas necesitan conocer la estructura interna del grafo, la cual esta
+declarada al comienzo de este archivo. Detalles sobre la implementación de todas las funciones usadas
+están en la sección \textbf{Tipos de datos}.
+
+\subsubsection{\texttt{Cthulhu.c}}
+Posee la implementación de los tipos de datos \texttt{VerticeSt}, \texttt{NimheSt} y \texttt{neighbours\_t}.
+Contiene la implementación de todas las funciones declaradas en \texttt{Cthulhu.h}, las cuales serán usadas
+en el \textbf{main()} del programa.
+
+Además, posee la implementación de todas las funciones relacionadas
+con el TAD \texttt{neighbours\_t}. Estas son:
+
+\begin{itemize}
+\item \texttt{neighbours\_empty()}, encargada de pedir memoria para la estructura nueva.
+
+Devuelve un puntero a la estructura.
+\item \texttt{neighbours\_destroy()}, para destruir la estructura y liberar su memoria
+
+Recibe un puntero a la estructura. Devuelve \textbf{NULL}.
+\item \texttt{neighbours\_init()}, para pedir memoria para el arreglo de colores de la estructura
+
+Recibe un puntero a la estructura y un \textbf{u32} indicando la cantidad de vecinos del vértice. Devuelve
+un puntero a la estructura.
+\item \texttt{neighbours\_append()}, para agregar la posición de vecinos nuevos a la estructura
+
+Recibe un puntero a la estructura y un \textbf{u32} indicando la posición de un vecino nuevo del vértice.
+Devuelve un puntero a la estrucutra.
+\item \texttt{neighbours\_update()}, para actualizar el arreglo de colores según el color de los vecinos
+
+Recibe un puntero a la estructura. Devuelve un puntero a la estructura.
+\item \texttt{neighbours\_find\_hole()}, para devolver el color más chico no usado por los vecinos
+
+Recibe un puntero a la estructura. Devuelve un \textbf{u32} indicando el color.
+\end{itemize}
+
+También se encuentra la implementación de todas las funciones de comparación usadas para ordenar el grafo.
+Para ordenar el grafo, usaremos una función de C llamada \texttt{qsort()}, la cual es importada del
+\emph{header} \texttt{stdlib.c}. Está recibe, entre otras cosas, el arreglo a ordenar y la función usada
+para comparar los elementos del arreglo.
+
+\subsubsection{\texttt{helpers.c}}
+Posee la implementación de las funciones usadas por la función \texttt{NuevoNimhe()} (i.e., las funciones
+usadas para leer los datos del grafo por \texttt{STDIN}). Estas son:
+\begin{itemize}
+\item \texttt{readline\_from\_stdin()}
+
+Devuelve un \emph{string} con la línea leída. En caso de no haber más líneas para leer o si una línea no
+respeta el formato de entrada (e.g., línea tiene más de 80 caracteres)
+devuelve \textbf{NULL}. Se la llama dentro de un ciclo para procesar lo que el usuario ingresa.
+\item \texttt{handle\_p\_line()}
+
+Si la línea empieza con la letra \textbf{p}, verificamos que sea de la forma "p edge n m" donde n y m
+son número de vértices y número de lados respectivamente, y devolvemos n y m encapsulados en una estructura
+\texttt{par\_t}.
+\item \texttt{handle\_e\_line()}
+
+Si la línea empieza con la letra \textbf{e}. verificamos que sea de la forma "e v w" donde v y w son los
+nombres de los vértices que forman parte de la arista vw. Al igual que antes, devolvemos los datos
+encapsulados en \texttt{par\_t}. 
+\item \texttt{strstrip()} encargada de remover el \texttt{\char`\\n} del final de la línea leída
+\item \texttt{strcopy()} encargada de hacer copias de texto
+\item \texttt{get\_l()} y \texttt{get\_r()}, para obtener ambos elementos de la estructura \texttt{par\_t}
+\end{itemize}
+
+\subsubsection{\texttt{rbtree.c}}
+Posee la implementación de la API de los árboles Rojo-Negro, además de funciones auxiliares necesarias.
+La especificación de esta API se encuentra en \texttt{rbtree.h}.
+Las funciones públicas son:
+
+\begin{itemize}
+\item \texttt{rb\_new()}, encargada de pedir memoria para el árbol nuevo
+\item \texttt{rb\_insert()}, para insertar nodos nuevos
+\item \texttt{rb\_exists()}, para saber si un elemento existe
+\item \texttt{rb\_search()}, para obtener el valor asociado a un elemento
+\item \texttt{rb\_destroy()}, para destruir el árbol y liberar su memoria
+\end{itemize}
+
+\subsubsection{\texttt{u32queue.c}}
+Posee la implementación de la API de la cola de números \textbf{u32}.
+La especificación de esta API se encuentra en \texttt{u32queue.h}.
+Las funciones públicas son:
+
+\begin{itemize}
+\item \texttt{queue\_empty()}, encargada de pedir memoria para la cola nueva 
+\item \texttt{queue\_destroy()}, para destruir la cola y liberar su memoria
+\item \texttt{queue\_is\_empty()}, para saber si hay elementos en la cola
+\item \texttt{queue\_enqueue()}, para agregar elementos
+\item \texttt{queue\_dequeue()}, para eliminar el primer elemento
+\item \texttt{queue\_first()}, para leer los datos del primer elemento
+\end{itemize}
+
+\subsubsection{\texttt{typedefs.h}}
+Dentro esta declarado del tipo de datos \texttt{u32}.
+
+\subsection{\texttt{dirmain/}}
+\subsubsection{\texttt{mainJAlegre.c}}
+Dentro de este directorio existe un solo archivo, \texttt{mainJAlegre.c}. En él esta implementado el
+\textbf{main()} de nuestro programa. 
+
+Se encarga de:
+\begin{itemize}
+\item cargar el grafo y alertarle al usuario si se respeta el formato de entrada
+\item contar cuántas veces se ordena con cada orden
+\item verificar que $\chi(G)>3$ con la función \texttt{Greedy(G)}
+\item destruir el grafo con la función \texttt{DestruirNimhe(G)}
+\item generar los 10 órdenes aleatorios y obtener el coloreo con cada uno
+
+Para esto, creamos un arreglo de tamaño \emph{n} con los valores del \emph{1-n}.
+Luego, recorremos el arreglo \textit{swappeando} la posición actual con una posición aleatoria.
+Este arreglo se lo pasamos a la función \texttt{OrdenEspecifico(G, orden)}.
+Siempre tendremos 2 arreglos, uno con el orden usado en el momento y otro con el orden que mejor
+coloreo dió. Solo reordenamos el del momento. Esto nos sirve para empezar las 1001 iteraciones con el mejor
+orden usado en estas 10 iteraciones, a menos que el orden Welsh Powell dé mejor resultado.
+Para obtener números aleatorios, usaremos como semilla el \emph{process ID} de nuestro programa en
+\emph{runtime}.
+\item ordenar el grafo con el orden Welsh Powell y obtener el coloreo
+\item ordenar el grafo con los órdenes elegidos al azar y obtener el coloreo con cada uno
+
+Un número aleatorio es generado y según su valor, ordenaremos con alguno de los 4 órdenes basados en los
+colores del grafo.
+\item imprimir en pantalla el resultado de las iteraciones
+\end{itemize}
+\clearpage
+
+\section{Tipos de datos}
+\subsection{u32}
+El tipo de datos \textbf{u32} se usa alrededor de todo el programa. 
+Para hacer su uso fácil, es definido en el archivo \texttt{apifiles/typedefs.h}
+e incluído donde sea necesario. Es un alias al tipo de datos \textbf{uint32\_t}
+incluído de la biblioteca estándar de C \texttt{<stdint.h>}.
+
+\subsection{VerticeSt}
+Está definido en el archivo \texttt{apifiles/Cthulhu.h}. Contiene información
+básica de un vértice. Lo que \textbf{no} contiene es información de otros vértices,
+por más que en el grafo estén relacionados. Incluye el nombre real del grafo,
+el cual es leído de lo que el usuario suministra al ejecutar el programa, su grado,
+el cual se incrementa a medida que se agregan vecinos nuevos, y su color, usado
+para ordenar el grafo. La estructura de este tipo es pública para que se puedan
+crear o manipular vértices en el archivo \texttt{dirmain/mainJAlegre.c}.
+
+\subsection{NimheSt - NimheP}
+La estructura (NimheSt) está definida en \texttt{apifiles/Cthulhu.c} y un
+puntero a la estructura (NimheP) en \texttt{apifiles/Cthulhu.h}. Se usa un
+puntero para encapsular la información. Contiene los datos esenciales de un
+grafo, como:
+\begin{itemize}
+\item la cantidad de lados
+\item la cantidad de vértices
+\item el $\Delta(grafo)$
+\item un arreglo con todos los vértices cargados
+\item un arreglo con la posición de los vértices en orden
+\item un arreglo de la estructura de vecinos para cada uno de los vértices
+(el elemento en la posición i de este arreglo corresponde con el vértice en
+la posición i del arreglo de vértices)
+\item la cantidad de colores usados para colorearlo
+\item un arreglo donde la posición indica el color y su valor, la cantidad de
+vértices coloreados con ese color.
+\end{itemize}
+
+\subsection{neighbours\_t}
+Es una estructura definida dentro de \texttt{apifiles/Cthulhu.c} ya que las
+funciones que manipulan esta estructura necesitan conocer la estructura del
+grafo. Su único objetivo es reunir dos arreglos en una sola estructura. Es usado
+para representar a los vecinos de los vértices. Su relación con los vértices es
+la posición en el arreglo (i.e., un vértice en la posición i tiene a sus vecinos
+en el arreglo de vecinos en la misma posición). El arreglo \texttt{neighbours}
+contiene la posición de cada uno de los vértices vecinos del vértice en cuestión.
+El arreglo \texttt{colors} es un \emph{bool vector} usado para colorear al vértice.
+En este arreglo, la posición $i$ corresponde con el color $i+1$.
+
+Las funciones implementadas para manipular este tipo son:
+\begin{itemize}
+\item \texttt{neighbours\_t neighbours\_empty()}
+
+Crea la estructura usada por este tipo de datos.
+
+\item \texttt{neighbours\_t neighbours\_init(neighbours\_t neighbours, u32 size)}
+
+Recibe el grado del vértice. Crea el arreglo \texttt{colors}.
+
+\item \texttt{neighbours\_t neighbours\_destroy(neighbours\_t neighbours)}
+
+Libera toda la memoria usada por la estructura.
+
+\item \texttt{u32 neighbours\_i(neighbours\_t neighbours, u32 i)}
+
+Recibe un valor entre 0 y el \emph{grado del vértice - 1}. Devuelve la posición del
+iésimo vecino del vértice.
+
+\item \texttt{neighbours\_t neighbours\_append(neighbours\_t neighbours, u32 index)}
+
+Agrega la posición de un vecino nuevo del vértice.
+
+\item \texttt{u32 neighbours\_find\_hole(neighbours\_t neighbours, u32 grado)}
+
+Devuelve el color más chico no usado por los vecinos de un vértice. Se supone
+que se llama a \texttt{neighbours\_update()} antes de correr esta función.
+Recorre el arreglo \texttt{colors} y devuelve la posición del primer
+\texttt{false} $+ 1$.
+
+\item \texttt{neighbours\_t neighbours\_update(NimheP G, u32 vertex)}
+
+Actualiza el \emph{bool vector} \texttt{colors} marcando los colores usados por
+los vecinos del vértice, es decir marca con \texttt{true} a la celda en la
+posición \emph{color del vecino - 1}. Solo tiene en cuenta colores menores al
+grado del vértice y distintos de 0 (vértices coloreados), el resto no importan.
+\end{itemize}
+
+\subsection{rb\_tree\_t}
+
+
+\subsection{u32queue\_t}
+
+
+\clearpage
+
+\section{Decisiones de diseño}
+hablar de rand y de realloc
+\clearpage
+
+\section{Respuestas a preguntas particulares}
+\subsection{Dado que los vértices pueden ser cualquier u32, ¿cómo sabemos si un vértice recién leído ya
+lo habíamos leído antes?}
+Al leer los vértices suministrados
+por el usuario, queremos saber si es un vértice nuevo para alocar espacio para contenerlo o si simplemente
+es un vértice existente y se quiere aclarar que tiene como vecino al vértice que lo acompaña.
+Dado que los vértices pueden ser cualquier número entre 0 y $2^{32}-1$, resolver este problema no es trivial
+si se desea velocidad alta y uso de memoria bajo para cargar el grafo.
+
+El método usado en esta implementación es usar árboles Rojo-Negro (TODO: referencia). Con esta estructura
+de datos, podemos lograr una eficiencia de espacio de $\mathcal{O}(n)$, siendo \emph{n} la cantidad de
+vértices en el grafo. Las operaciones sobre el árbol usadas por el programa son las de insertar elementos
+nuevos y buscar elementos, ambas con complejidad de tiempo de $\mathcal{O}(\ln{n})$.
+
+\subsection{¿Cómo esta implementado $\Gamma(x)$?}
+El grafo, en su estructura interna, posee un arreglo de los vértices y un arreglo de arreglos de los
+índices (en el arreglo de los vértices) de cada uno de los vecinos de los vértices.
+
+Por ejemplo, si en el índice \emph{3} del arreglo de los vértices se ubica el vértice \emph{35}, en el
+índice \emph{3} del arreglo de los vecinos se ubica una estructura del tipo \textbf{neighbours\_t}, el cual
+encapsula información de los vecinos del vértice \emph{35}, incluido un arreglo con los índices de los
+vértices vecinos del vértice \emph{35}. Esta información se obtiene mediante la función 
+\texttt{neighbours\_i()}.
+
+\lstset{style=customC}
+\subsection{¿Cómo esta implementado el orden de los vértices?}
+Dentro de la estructura del grafo existe un arreglo de números de tipo \textbf{u32} de tamaño \emph{n}.
+Este arreglo, en cada posición, contiene los índices de los vértices en el arreglo de vértices.
+Las posiciones indican el orden, es decir, supongamos que el arreglo con el orden se llama \texttt{orden}
+y el arreglo de vértices se llama \texttt{vertices}. Entonces,
+\begin{lstlisting}
+vertices[orden[0]]
+\end{lstlisting}
+equivale al primer vértice del grafo en el orden actual. Por otro lado,
+\begin{lstlisting}
+vertices[0]
+\end{lstlisting}
+equivale al primer vértice del grafo en el orden que el programa leyó los vértices.
+
+El arreglo con los vértices nunca intercambia de lugar sus elementos. El arreglo con el orden es modificado
+con todas las funciones para ordenar el grafo.
+
+Desde que se carga un grafo hasta que el programa termina, el primer vértice en el arreglo de vértices es
+siempre el mismo. El valor en el primer campo del arreglo con el orden no siempre será igual.
+
+\subsection{¿Cómo esta implementada la función \texttt{Greedy()}?}
+Primero, le quita el color a todos los vértices. Esto es necesario para que \texttt{neighbours\_update()}
+no tenga en cuenta colores de corridas viejas. También limpiamos el arreglo \texttt{nvertices\_color},
+dejando todos sus campos con el número 0.
+
+Luego, coloreamos el primer vértice con el color 1.
+
+Después, en un ciclo de \emph{1...n} (el primer vértice ya está coloreado) obtenemos la posición de los
+vértices en orden. Actualizamos su estructura de vecinos asociada, es decir, recorremos todos los vecinos
+del vértice en cuestión, viendo sus colores y ajustando el arreglo \texttt{colors}. Este arreglo tiene
+una cantidad de celdas igual al grado del vértice. Esto es porque si un vértice tiene 24 vecinos, y uno de
+esos vecinos está coloreado con el color 28, no afecta en el color que seleccionaré para colorear al vértice.
+En el peor caso, todos los vecinos del vértice estan coloreados con colores distintos, crecientes a partir
+del color 1. En el ejemplo, supongamos que la posición del vértice en cuestión es 5,
+\lstset{style=customC}
+\begin{lstlisting}
+G->vertices[5].grado = 24
+G->vertices[neighbours_i(G->vecinos[5], 0)].color = 1
+G->vertices[neighbours_i(G->vecinos[5], 1)].color = 2
+.
+.
+.
+G->vertices[neighbours_i(G->vecinos[5], 23)].color = 24
+\end{lstlisting}
+Entonces, luego de actualizar el arreglo de colores con la función \texttt{neighbours\_update()}, el arreglo
+de colores nos queda así:
+\begin{lstlisting}
+colors[0] = true
+colors[1] = true
+.
+.
+.
+colors[23] = true
+\end{lstlisting}
+La función \texttt{neighbours\_find\_hole()}, que devuelve el color más chico no usado, recorre el arreglo
+de colores buscando alguna posición con el valor \texttt{false}, indicando que el color esta libre para
+usar. En el ejemplo, ésta función devolvería 25. 
+
+Con el color que devuelve la función coloreamos al vértice y aumentamos por 1 la cantidad de vértices
+coloreados con ese color.
+
+Al salir del ciclo, lo único pendiente por hacer es contar cuántos colores fueron usados para colorear
+el grafo. Para esto, recorremos el arreglo \texttt{nvertices\_color} hasta que el valor en algúna celda
+sea 0.
+
+Esta función podría ser más rapida ya que para cada vértice, estamos recorriendo todos sus vecinos, no solo
+los vecinos que fueron coloreados antes de él. No produce un coloreo no propio porque limpiamos los colores
+del grafo antes de arrancar. Con la implementación elegida para el grafo, tener en cuenta los vértices ya
+coloreados y revisar solo los vecinos de cada vértice ya coloreados costaría más que hacerlo de esta manera.
+\subsection{¿Cómo estan implementados los órdenes Revierte, ChicoGrande y GrandeChico?}
+Estos 3 órdenes están implementados de la misma manera, usando la función \texttt{qsort()}. Lo único que
+tienen de distinto es que la función de comparación usada para cada uno es diferente.
+\clearpage
+
+\section{Benchmarks}
+\clearpage
+
+\end{document}  

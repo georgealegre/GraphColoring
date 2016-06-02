@@ -14,6 +14,8 @@
 
 #define FACTOR_REALLOC 8
 
+static NimheP grafo = NULL;
+
 struct _neighbours_t {
     bool* colors;       /* Arreglo de tamaño del total de vecinos.
                          * La posición indica el color. El valor indica si el color está usado. */
@@ -33,8 +35,6 @@ struct NimheSt{
     VerticeSt* vertices;    // Arreglo de vértices en orden original.
     neighbours_t* vecinos;  // Arreglo de listas de vecinos de vértices.
 };
-
-static NimheP grafo = NULL;
 
 neighbours_t neighbours_empty() {
     neighbours_t neighbours = NULL;
@@ -228,7 +228,6 @@ NimheP agregar_vertices(NimheP G, u32 lvertice, bool existel, u32 pos_lv, u32 rv
 }
 
 NimheP NuevoNimhe() {
-    srand(time(NULL));
     // Grafo.
     NimheP G = NULL; // Grafo que será devuelto por función.
     u32 delta_grande = 0; // Delta grande del grafo G.
@@ -428,8 +427,19 @@ NimheP NuevoNimhe() {
 
         G->delta_grande = delta_grande;
     }
-
+    
+    // Inicializo variable global.
     grafo = G;
+
+    // Guardo orden natural para uso repetido.
+    OrdenNatural(G);
+    G->orden_natural = calloc(G->nvertices, sizeof(u32));
+    assert(G->orden_natural != NULL);
+    for (u32 i = 0; i < G->nvertices; i++)
+        G->orden_natural[i] = G->orden[i];
+
+    // Inicializo semilla.
+    srand((G->nvertices * G->nlados) + G->vertices[G->orden[1]].nombre);
 
     return (G);
 }
@@ -647,6 +657,7 @@ u32 Greedy(NimheP G) {
         }
     }
 
+
     return (G->ncolores);
 }
 
@@ -656,12 +667,6 @@ u32 Greedy(NimheP G) {
  *              Funciones de ordenación.                   *
  *                                                         *
  ***********************************************************/
-/*
-void show(NimheP G) {
-    for (u32 i = 0; i < G->nvertices; i++)
-        printf("vertice %u, color %u, grado %u\n", G->vertices[G->orden[i]].nombre, G->vertices[G->orden[i]].color, G->vertices[G->orden[i]].grado);
-}
-*/
 
 int cmp_nat(const void* left, const void* right) {
     u32 l = *(u32*) left;
@@ -724,7 +729,6 @@ void ReordenAleatorioRestringido(NimheP G) {
         rnd_colors[i] = i + 1;
 
     // Randomizar arreglo.
-    srand(time(NULL));
     for (u32 i = 0; i < G->ncolores; i++)
         swap(rnd_colors, i, (rand() % G->ncolores));
 
@@ -806,17 +810,15 @@ void OrdenEspecifico(NimheP G, u32* x) {
 
     /* Checkear que "x" sean todos los números entre 0 y n-1 sin repetir.
      * Si no cumple esta condición, no modificar el orden de G. */
-    if (sizeof(x) == G->nvertices*sizeof(u32)) {
-        for (u32 i = 0; i < G->nvertices; i++) {
-            // Ver si números en "x" existen en árbol.
-            // Agregar números en "x" a árbol.
-            // Si existen, error con PRE condición.
-            if (!rb_exists(tree, x[i])) {
-                tree = rb_insert(tree, x[i], x[i]);
-            } else {
-                tree = rb_destroy(tree);
-                return;
-            }
+    for (u32 i = 0; i < G->nvertices; i++) {
+        // Ver si números en "x" existen en árbol.
+        // Agregar números en "x" a árbol.
+        // Si existen, error con PRE condición.
+        if (!rb_exists(tree, x[i]) && (x[i] < G->nvertices)) {
+            tree = rb_insert(tree, x[i], x[i]);
+        } else {
+            tree = rb_destroy(tree);
+            return;
         }
     }
 
@@ -824,13 +826,7 @@ void OrdenEspecifico(NimheP G, u32* x) {
     // Eliminar memoria usada por árbol.
     tree = rb_destroy(tree);
 
-    // Ordenar con orden natural y guardar orden.
-    if (G->orden_natural == NULL) {
-        OrdenNatural(G);
-        G->orden_natural = calloc(G->nvertices, sizeof(u32));
-        memcpy(G->orden_natural, G->orden, G->nvertices*sizeof(u32));
-    }
-
+        
     // Ordenar con orden de "x".
     for (u32 i = 0; i < G->nvertices; i++) {
         G->orden[i] = G->orden_natural[x[i]];
