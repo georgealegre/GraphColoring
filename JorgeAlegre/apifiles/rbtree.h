@@ -1,3 +1,8 @@
+/* Matemática Discreta II
+ * Proyecto, primera parte.
+ * Autor: Alegre, Jorge Facundo <facu.alegre@gmail.com>
+ */
+
 #ifndef RBTREE_H
 #define RBTREE_H
 

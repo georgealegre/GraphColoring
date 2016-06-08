@@ -1,3 +1,8 @@
+/* Matemática Discreta II
+ * Proyecto, primera parte.
+ * Autor: Alegre, Jorge Facundo <facu.alegre@gmail.com>
+ */
+
 #include "typedefs.h"
 
 #define MAX_LINE_LENGTH 80

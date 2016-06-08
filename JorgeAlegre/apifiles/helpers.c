@@ -1,3 +1,8 @@
+/* Matemática Discreta II
+ * Proyecto, primera parte.
+ * Autor: Alegre, Jorge Facundo <facu.alegre@gmail.com>
+ */
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +17,7 @@ struct _par_t {
     u32 r;
 };
 
+// Función extraída del kernel de Linux.
 char* strstrip(char* s) {
     size_t size;
     char *end;

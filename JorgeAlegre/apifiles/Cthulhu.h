@@ -1,5 +1,7 @@
-// Autores:
-// Alegre, Jorge Facundo <facu.alegre@gmail.com>
+/* Matemática Discreta II
+ * Proyecto, primera parte.
+ * Autor: Alegre, Jorge Facundo <facu.alegre@gmail.com>
+ */
 
 #ifndef CTHULHU_H
 #define CTHULHU_H
@@ -7,7 +9,6 @@
 #include "typedefs.h"
 
 
-typedef struct _neighbours_t *neighbours_t;
 typedef struct NimheSt *NimheP;
 typedef struct _vertex_t{
    u32 nombre;

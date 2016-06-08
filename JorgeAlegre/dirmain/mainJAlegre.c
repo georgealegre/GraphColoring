@@ -1,11 +1,14 @@
+/* Matemática Discreta II
+ * Proyecto, primera parte.
+ * Autor: Alegre, Jorge Facundo <facu.alegre@gmail.com>
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "Cthulhu.h"
 
-#include <time.h>
-
-#define NCORRIDAS_RND 10
-#define NCORRIDAS 1000
+#define NCORRIDAS_RND   10
+#define NCORRIDAS       1000
 
 u32 min(u32 a, u32 b) {
     if (a <= b) return a;
@@ -24,9 +27,12 @@ int main() {
     u32* orden_actual = NULL; // Arreglo con el orden usado en el momento.
     u32 nvertices = 0; // Número de vértices en el grafo.
     u32 ncromatico = 0; // Resultado de correr Greedy sobre el grafo.
-    u32 min_ncromatico = 0; // Menor número de colores usados hasta el momento para colorear.
-    char* error_message = "Error en formato de entrada.\n"; // Imprimir por error de lectura.
-    int nCG = 0, nGC = 0, nR = 0, nRAR = 0; // Para contar cuántas veces ordeno con cada orden.
+    // Menor número de colores usados hasta el momento para colorear.
+    u32 min_ncromatico = 0;
+    // Imprimir por error de lectura.
+    char* error_message = "Error en formato de entrada.\n";
+    // Para contar cuántas veces ordeno con cada orden.
+    int nCG = 0, nGC = 0, nR = 0, nRAR = 0;
     int opcion = 0; // Para elegir orden a usar en iteración.
 
 
@@ -36,6 +42,7 @@ int main() {
         printf("%s", error_message);
         return 0;
     }
+    
     nvertices = NumeroDeVertices(grafo);
     min_ncromatico = nvertices + 1;
 
@@ -48,7 +55,8 @@ int main() {
     } else printf("Grafo No Bipartito\n");
 
     // Crear ordenes aleatorios.
-    srand((nvertices * NumeroDeLados(grafo)) + NombreDelVertice(IesimoVerticeEnElOrden(grafo, 1)));
+    srand((nvertices * NumeroDeLados(grafo)) + 
+          NombreDelVertice(IesimoVerticeEnElOrden(grafo, 1)));
     mejor_orden = calloc(nvertices, sizeof(u32));
     orden_actual = calloc(nvertices, sizeof(u32));
     // Cargamos arreglo de orden con números del 0 a nvertices-1.
@@ -148,7 +156,8 @@ int main() {
     min_ncromatico = min(min_ncromatico, ncromatico);
 
     // Imprimir resultados a usuario.
-    printf("Mejor coloreo con Greedy iterado %d veces: %u colores\n", NCORRIDAS+1, min_ncromatico);
+    printf("Mejor coloreo con Greedy iterado %d veces: %u colores\n",
+           NCORRIDAS + 1, min_ncromatico);
     printf("(%d CG,%d GC,%d R,%d RAR)\n", nCG, nGC, nR, nRAR);
 
     // Destruir grafo.

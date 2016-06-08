@@ -1,5 +1,7 @@
-// Autores:
-// Alegre, Jorge Facundo <facu.alegre@gmail.com>
+/* Matemática Discreta II
+ * Proyecto, primera parte.
+ * Autor: Alegre, Jorge Facundo <facu.alegre@gmail.com>
+ */
 
 #include <stdio.h>
 #include <assert.h>
@@ -18,14 +20,14 @@
 // Para acceder al grafo en las funciones de comparación.
 static NimheP grafo = NULL;
 
-struct _neighbours_t {
+typedef struct _neighbours_t {
     bool* colors;       /* Arreglo de tamaño del total de vecinos.
                          * posición + 1 = color. 
                          * El valor indica si el color está usado. */
     u32* neighbours;    // Arreglo de vecinos.
     u32 size;           // Cantidad de vecinos.
     u32 asize;          // Espacio disponible para agregar vecinos.
-};
+} *neighbours_t;
 
 struct NimheSt{
     u32 nvertices;          // Número de vertices en el grafo.
@@ -49,7 +51,7 @@ neighbours_t neighbours_empty() {
 }
 
 neighbours_t neighbours_init(neighbours_t neighbours, u32 size) {
-    // Una vez que se cuántos vecinos tengo, crear arreglo con tamaño fijo.
+    // Una vez que sé cuántos vecinos tengo, crear arreglo con tamaño fijo.
     neighbours->colors = calloc(size, sizeof(bool));
     assert(neighbours->colors != NULL);
 
@@ -73,10 +75,11 @@ neighbours_t neighbours_destroy(neighbours_t neighbours) {
         neighbours = NULL;
     }
 
-    return (neighbours);
+    return (NULL);
 }
 
 u32 neighbours_i(neighbours_t neighbours, u32 i) {
+    // Devuelve la posición del iesimo vecino.
     return (neighbours->neighbours[i]);
 }
 
@@ -90,6 +93,7 @@ neighbours_t neighbours_append(neighbours_t neighbours, u32 index) {
         neighbours->asize += FACTOR_REALLOC;
         neighbours->neighbours = realloc(neighbours->neighbours,
                 (neighbours->asize)*sizeof(u32));
+        // Guardar posición del vecino.
         neighbours->neighbours[neighbours->size] = index;
         neighbours->size++;
     }
@@ -99,7 +103,7 @@ neighbours_t neighbours_append(neighbours_t neighbours, u32 index) {
 
 u32 neighbours_find_hole(neighbours_t neighbours, u32 grado) {
     /* Índice 0 indica color 1, índice 1 indica color 2, ...,
-     * índice (size - 1) indica color "size". */
+     * índice (grado - 1) indica color "grado". */
 
     for (u32 i = 0; i < grado; i++) {
         // i es iterador de vértices.
@@ -121,6 +125,7 @@ neighbours_t neighbours_update(NimheP G, u32 vertex) {
 
     for (u32 i = 0; i < G->vertices[vertex].grado; i++) {
         // i es iterador de vértices.
+        // Obtener el color del iésimo vecino.
         color_vecino = G->vertices[neighbours_i(G->vecinos[vertex], i)].color;
         if (color_vecino && color_vecino <= G->vertices[vertex].grado) {
             // En palabras: si el color del iesimo vecino de "vertex"
@@ -146,29 +151,29 @@ u32 NombreDelVertice(VerticeSt x) {
 }
 
 void ImprimirVecinosDelVertice(VerticeSt x, NimheP G) {
-    u32 i = 0; // Iterador de vecinos.
     u32 posv = 0; // Para buscar la posición de "x".
-    bool encontrado = false; // Indica que encontré a "x" en "G".
 
     if (G != NULL) {
-        while (posv < G->nvertices && !encontrado) {
+        for (posv = 0; posv < G->nvertices; posv++) {
+            // Buscar la posición del vértice "x".
             if ((G->vertices[posv]).nombre == x.nombre) {
-                encontrado = true;
-            } else {
-                posv++;
+                break;
             }
         }
 
         // Imprimir con comma todos menos el último vecino.
-        while (i < (G->vertices[posv]).grado - 1) {
+        for (u32 i = 0; i < G->vertices[posv].grado - 1; i++) {
+            // i es iterador de vecinos.
             // Imprime el nombre del vertice en la posicion de cada uno
             // de los vecinos del vertice de entrada.
-            printf("%u,", G->vertices[(neighbours_i(G->vecinos[posv], i))].nombre);
-            i++;
+            printf("%u,",
+                   G->vertices[(neighbours_i(G->vecinos[posv], i))].nombre);
         }
 
         // Imprimir con punto al último vecino.
-        printf("%u.\n", G->vertices[(neighbours_i(G->vecinos[posv], i))].nombre);
+        printf("%u.\n",
+               G->vertices[(neighbours_i(G->vecinos[posv],
+                                         G->vertices[posv].grado - 1))].nombre);
     }
 }
 
@@ -177,53 +182,67 @@ u32 max(u32 a, u32 b) {
     else return a;
 }
 
-NimheP agregar_vertices(NimheP G, u32 lvertice, bool existel, u32 pos_lv, u32 rvertice, bool exister, u32 pos_rv, u32* pos_vertice_nuevo) {
+NimheP agregar_vertices(NimheP G,
+                        u32 lvertice,
+                        bool existel,
+                        u32 pos_lv,
+                        u32 rvertice,
+                        bool exister,
+                        u32 pos_rv,
+                        u32* pos_v_nuevo) {
     if (!existel && !exister) {
         // Ambos vértices son nuevos.
 
-        G->vertices[*pos_vertice_nuevo].nombre = lvertice;
-        G->vertices[*pos_vertice_nuevo].grado = 1;
-        G->vertices[*pos_vertice_nuevo].color = 0;
-        G->vecinos[*pos_vertice_nuevo] = neighbours_empty();
-        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], *pos_vertice_nuevo + 1);
+        G->vertices[*pos_v_nuevo].nombre = lvertice;
+        G->vertices[*pos_v_nuevo].grado = 1;
+        G->vertices[*pos_v_nuevo].color = 0;
+        G->vecinos[*pos_v_nuevo] = neighbours_empty();
+        G->vecinos[*pos_v_nuevo] = neighbours_append(G->vecinos[*pos_v_nuevo],
+                                                     *pos_v_nuevo + 1);
 
-        (*pos_vertice_nuevo)++;
+        // Cargar el derecho en la posición correspondiente.
+        (*pos_v_nuevo)++;
 
-        G->vertices[*pos_vertice_nuevo].nombre = rvertice;
-        G->vertices[*pos_vertice_nuevo].grado = 1;
-        G->vertices[*pos_vertice_nuevo].color = 0;
-        G->vecinos[*pos_vertice_nuevo] = neighbours_empty();
-        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], *pos_vertice_nuevo - 1);
+        G->vertices[*pos_v_nuevo].nombre = rvertice;
+        G->vertices[*pos_v_nuevo].grado = 1;
+        G->vertices[*pos_v_nuevo].color = 0;
+        G->vecinos[*pos_v_nuevo] = neighbours_empty();
+        G->vecinos[*pos_v_nuevo] = neighbours_append(G->vecinos[*pos_v_nuevo],
+                                                     *pos_v_nuevo - 1);
 
-        (*pos_vertice_nuevo)++;
+        (*pos_v_nuevo)++;
     } else if (!existel && exister) {
         // Solo cargué derecho
-        G->vertices[*pos_vertice_nuevo].nombre = lvertice;
-        G->vertices[*pos_vertice_nuevo].grado = 1;
-        G->vertices[*pos_vertice_nuevo].color = 0;
-        G->vecinos[*pos_vertice_nuevo] = neighbours_empty();
-        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], pos_rv);
+        G->vertices[*pos_v_nuevo].nombre = lvertice;
+        G->vertices[*pos_v_nuevo].grado = 1;
+        G->vertices[*pos_v_nuevo].color = 0;
+        G->vecinos[*pos_v_nuevo] = neighbours_empty();
+        G->vecinos[*pos_v_nuevo] = neighbours_append(G->vecinos[*pos_v_nuevo],
+                                                     pos_rv);
 
         // Agregar izquierdo como vecino de derecho.
         G->vertices[pos_rv].grado++;
-        G->vecinos[pos_rv] = neighbours_append(G->vecinos[pos_rv], *pos_vertice_nuevo);
+        G->vecinos[pos_rv] = neighbours_append(G->vecinos[pos_rv],
+                                               *pos_v_nuevo);
 
-        (*pos_vertice_nuevo)++;
+        (*pos_v_nuevo)++;
     } else if (existel && !exister) {
         // Solo cargué izquierdo
-        G->vertices[*pos_vertice_nuevo].nombre = rvertice;
-        G->vertices[*pos_vertice_nuevo].grado = 1;
-        G->vertices[*pos_vertice_nuevo].color = 0;
-        G->vecinos[*pos_vertice_nuevo] = neighbours_empty();
-        G->vecinos[*pos_vertice_nuevo] = neighbours_append(G->vecinos[*pos_vertice_nuevo], pos_lv);
+        G->vertices[*pos_v_nuevo].nombre = rvertice;
+        G->vertices[*pos_v_nuevo].grado = 1;
+        G->vertices[*pos_v_nuevo].color = 0;
+        G->vecinos[*pos_v_nuevo] = neighbours_empty();
+        G->vecinos[*pos_v_nuevo] = neighbours_append(G->vecinos[*pos_v_nuevo],
+                                                     pos_lv);
 
         // Agregar derecho como vecino de izquierdo.
         G->vertices[pos_lv].grado++;
-        G->vecinos[pos_lv] = neighbours_append(G->vecinos[pos_lv], *pos_vertice_nuevo);
+        G->vecinos[pos_lv] = neighbours_append(G->vecinos[pos_lv], 
+                                               *pos_v_nuevo);
 
-        (*pos_vertice_nuevo)++;
+        (*pos_v_nuevo)++;
     } else {
-        // Ambos vértices ya existen. Solo setear vecinos.
+        // Ambos vértices ya existen. Solo agregar vecinos.
         G->vertices[pos_lv].grado++;
         G->vertices[pos_rv].grado++;
         G->vecinos[pos_lv] = neighbours_append(G->vecinos[pos_lv], pos_rv);
@@ -514,7 +533,7 @@ u32 ImprimirVerticesDeColor(NimheP G, u32 i) {
         for (u32 j = 0; j < G->nvertices; j++) {
             if (G->vertices[j].color == i) {
                 if (result == 0) {
-                    printf("Vertices de Color %u: %u", i, G->vertices[j].nombre);
+                    printf("Vertices de Color %u: %u", i,G->vertices[j].nombre);
                 } else {
                     printf(",%u", G->vertices[j].nombre);
                 }
@@ -563,21 +582,25 @@ VerticeSt IesimoVecino(NimheP G, VerticeSt x, u32 i) {
  ***********************************************************/
 
 bool coloreo_es_propio(NimheP G) {
-    bool result = true;
+    u32 color_v = 0; // Para guardar el color de cada vértice.
 
     for (u32 i = 0; i < G->nvertices; i++) {
-        for (u32 j = 0; j < G->vertices[G->orden[i]].grado; j++) {
-            result &= G->vertices[G->orden[i]].color != G->vertices[neighbours_i(G->vecinos[G->orden[i]], j)].color;
-        }
+        // i es iterador de vértices.
+        color_v = G->vertices[i].color;
+        for (u32 j = 0; j < G->vertices[i].grado; j++)
+            // j es iterador de vecinos.
+            if (color_v != G->vertices[neighbours_i(G->vecinos[i], j)].color)
+                // Si tienen el mismo color, no es propio.
+                return (false);
     }
 
-    return (result);
+    return (true);
 }
 
 int Chidos(NimheP G) {
     u32 i = 0; // Iterador de vértices en el grafo.
     u32 x = 0; // Iterador de vecinos del vértice.
-    u32 nvertices_coloreados = 0; // Cuantos vértices colorie.
+    u32 nvertices_coloreados = 0; // Cuantos vértices colorié.
     u32 v; // Posición del vértice sobre el cual trabajaremos.
     u32 w; // Posición del vecino del "v".
     u32queue_t queue = queue_empty(); // Cola para guardar vecinos del vértice.
@@ -594,7 +617,7 @@ int Chidos(NimheP G) {
         G->vertices[i].color = 1;
         nvertices_coloreados++;
 
-        // Encolar vértice.
+        // Encolar vértice (i.e., su posición).
         queue = queue_enqueue(queue, i);
 
         // Mientras la cola tenga vértices.
@@ -617,7 +640,7 @@ int Chidos(NimheP G) {
         }
     }
 
-    // Liberar memoria usada por stack.
+    // Liberar memoria usada por cola.
     queue = queue_destroy(queue);
     assert(queue == NULL);
 
@@ -640,26 +663,28 @@ u32 Greedy(NimheP G) {
     G->nvertices_color[1]++;
    
     for (u32 v = 1; v < G->nvertices; v++) {
+        // v es iterador de vértices.
         vactual = G->orden[v];
 
-        // En pocas palabras, buscar el color más chico no usado por vecinos.
-
-        // Encontrar color.
+        // Encontrar color más chico no usado por vecinos.
         G->vecinos[vactual] = neighbours_update(G, vactual);
-        color = neighbours_find_hole(G->vecinos[vactual], G->vertices[vactual].grado);
+        color = neighbours_find_hole(G->vecinos[vactual],
+                                     G->vertices[vactual].grado);
 
         // Colorear vértice.
         G->vertices[vactual].color = color;
 
-        // Aumentar arreglo de cantidad de vértices coloreados con "color".
+        // Aumentar por 1 cantidad de vértices coloreados con "color".
         G->nvertices_color[color]++;
     }
 
     // Contar cuántos colores fueron usados.
     for (u32 c = G->delta_grande + 1; c != 1; c--) {
         if (G->nvertices_color[c] != 0) {
-           G->ncolores = c;
-           return (c);
+            // De arriba a abajo, buscar primer color usado.
+            // Esa es la cantidad de colores usados.
+            G->ncolores = c;
+            return (c);
         }
     }
 
@@ -680,7 +705,9 @@ int cmp_nat(const void* left, const void* right) {
     u32 ln = grafo->vertices[l].nombre;
     u32 rn = grafo->vertices[r].nombre;
 
-    if (ln < rn) return -1; 
+    // Si el nombre del vértice izquierdo es menor al nombre del vértice derecho
+    // está bien ordenado.
+    if (ln < rn) return -1;
     else if (ln > rn) return 1;
 
     return 0;
@@ -696,6 +723,8 @@ int cmp_wp(const void* left, const void* right) {
     u32 dl = grafo->vertices[l].grado;
     u32 dr = grafo->vertices[r].grado;
 
+    // Si el grado del vértice derecho es menor al grado del vértice izquierdo
+    // está bien ordenado.
     if (dl > dr) return -1;
     else if (dl < dr) return 1;
 
