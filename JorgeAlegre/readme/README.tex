@@ -105,44 +105,24 @@ que no respeta el formato especificado o puede devolver el resultado de su corri
 \subsection{\texttt{apifiles/}}
 La mayor parte del código se encuentra ubicado en el archivo \texttt{Cthulhu.c}. Esto es así porque
 la mayoría de las funciones implementadas necesitan conocer la estructura interna del grafo, la cual esta
-declarada al comienzo de este archivo. Detalles sobre la implementación de todas las funciones usadas
-están en la sección \textbf{Tipos de datos}.
+declarada al comienzo de este archivo.
 
 \subsubsection{\texttt{Cthulhu.c}}
-Posee la implementación de los tipos de datos \texttt{VerticeSt}, \texttt{NimheSt} y \texttt{neighbours\_t}.
+Posee la implementación de los tipos de datos \texttt{NimheSt} y \texttt{neighbours\_t}.
 Contiene la implementación de todas las funciones declaradas en \texttt{Cthulhu.h}, las cuales serán usadas
 en el \textbf{main()} del programa.
 
 Además, posee la implementación de todas las funciones relacionadas
-con el TAD \texttt{neighbours\_t}. Estas son:
-
-\begin{itemize}
-\item \texttt{neighbours\_empty()}, encargada de pedir memoria para la estructura nueva.
-
-Devuelve un puntero a la estructura.
-\item \texttt{neighbours\_destroy()}, para destruir la estructura y liberar su memoria
-
-Recibe un puntero a la estructura. Devuelve \textbf{NULL}.
-\item \texttt{neighbours\_init()}, para pedir memoria para el arreglo de colores de la estructura
-
-Recibe un puntero a la estructura y un \textbf{u32} indicando la cantidad de vecinos del vértice. Devuelve
-un puntero a la estructura.
-\item \texttt{neighbours\_append()}, para agregar la posición de vecinos nuevos a la estructura
-
-Recibe un puntero a la estructura y un \textbf{u32} indicando la posición de un vecino nuevo del vértice.
-Devuelve un puntero a la estrucutra.
-\item \texttt{neighbours\_update()}, para actualizar el arreglo de colores según el color de los vecinos
-
-Recibe un puntero a la estructura. Devuelve un puntero a la estructura.
-\item \texttt{neighbours\_find\_hole()}, para devolver el color más chico no usado por los vecinos
-
-Recibe un puntero a la estructura. Devuelve un \textbf{u32} indicando el color.
-\end{itemize}
+con el TAD \texttt{neighbours\_t}, las cuales estan detalladas en la sección \textbf{Tipos de datos}.
 
 También se encuentra la implementación de todas las funciones de comparación usadas para ordenar el grafo.
-Para ordenar el grafo, usaremos una función de C llamada \texttt{qsort()}, la cual es importada del
-\emph{header} \texttt{stdlib.c}. Está recibe, entre otras cosas, el arreglo a ordenar y la función usada
+Para ordenar el grafo, usaremos una función de C llamada \texttt{qsort()}, la cual es importada de
+la librería \texttt{<stdlib.c>}. Ésta recibe, entre otras cosas, el arreglo a ordenar y la función usada
 para comparar los elementos del arreglo.
+
+\subsubsection{\texttt{Cthulhu.h}}
+Posee la implementación del tipo de datos \texttt{VerticeSt}. Se encuentra en este archivo (i.e., su estructura es pública)
+para que un tercero como el \textbf{main()} pueda llamar a la función \texttt{IesimoVerticeEnElOrden(NimheP G, u32 i)}, la cual devuelve un vértice.
 
 \subsubsection{\texttt{helpers.c}}
 Posee la implementación de las funciones usadas por la función \texttt{NuevoNimhe()} (i.e., las funciones
@@ -152,17 +132,17 @@ usadas para leer los datos del grafo por \texttt{STDIN}). Estas son:
 
 Devuelve un \emph{string} con la línea leída. En caso de no haber más líneas para leer o si una línea no
 respeta el formato de entrada (e.g., línea tiene más de 80 caracteres)
-devuelve \textbf{NULL}. Se la llama dentro de un ciclo para procesar lo que el usuario ingresa.
+devuelve \texttt{NULL}. Se la llama dentro de un ciclo para procesar lo que el usuario ingresa.
 \item \texttt{handle\_p\_line()}
 
-Si la línea empieza con la letra \textbf{p}, verificamos que sea de la forma "p edge n m" donde n y m
+Si la línea empieza con la letra \textbf{p}, verificamos que sea de la forma \emph{p edge n m} donde n y m
 son número de vértices y número de lados respectivamente, y devolvemos n y m encapsulados en una estructura
 \texttt{par\_t}.
 \item \texttt{handle\_e\_line()}
 
-Si la línea empieza con la letra \textbf{e}. verificamos que sea de la forma "e v w" donde v y w son los
-nombres de los vértices que forman parte de la arista vw. Al igual que antes, devolvemos los datos
-encapsulados en \texttt{par\_t}. 
+Si la línea empieza con la letra \textbf{e}, verificamos que sea de la forma \emph{e v w} donde \textbf{v} y \textbf{w} son los
+nombres de los vértices que forman parte de la arista \textbf{vw}. Al igual que antes, devolvemos los datos
+encapsulados en un \texttt{par\_t}. 
 \item \texttt{strstrip()} encargada de remover el \texttt{\char`\\n} del final de la línea leída
 \item \texttt{strcopy()} encargada de hacer copias de texto
 \item \texttt{get\_l()} y \texttt{get\_r()}, para obtener ambos elementos de la estructura \texttt{par\_t}
@@ -196,7 +176,7 @@ Las funciones públicas son:
 \end{itemize}
 
 \subsubsection{\texttt{typedefs.h}}
-Dentro esta declarado del tipo de datos \texttt{u32}.
+Dentro esta declarado del tipo de datos \textbf{u32}.
 
 \subsection{\texttt{dirmain/}}
 \subsubsection{\texttt{mainJAlegre.c}}
@@ -211,14 +191,14 @@ Se encarga de:
 \item destruir el grafo con la función \texttt{DestruirNimhe(G)}
 \item generar los 10 órdenes aleatorios y obtener el coloreo con cada uno
 
-Para esto, creamos un arreglo de tamaño \emph{n} con los valores del \emph{1-n}.
+Para esto, creamos un arreglo de tamaño \emph{n} con los valores del \emph{0} hasta \emph{$n-1$}.
 Luego, recorremos el arreglo \textit{swappeando} la posición actual con una posición aleatoria.
 Este arreglo se lo pasamos a la función \texttt{OrdenEspecifico(G, orden)}.
-Siempre tendremos 2 arreglos, uno con el orden usado en el momento y otro con el orden que mejor
-coloreo dió. Solo reordenamos el del momento. Esto nos sirve para empezar las 1001 iteraciones con el mejor
+
+Siempre tendremos 2 arreglos, uno con el orden usado en el momento y otro con el orden que generó el mejor coloreo hasta el momento.
+Solo reordenamos el del momento. Esto nos sirve para empezar las 1001 iteraciones con el mejor
 orden usado en estas 10 iteraciones, a menos que el orden Welsh Powell dé mejor resultado.
-Para obtener números aleatorios, usaremos como semilla el \emph{process ID} de nuestro programa en
-\emph{runtime}.
+Para generar números aleatorios, se llama a la función \texttt{rand()}.
 \item ordenar el grafo con el orden Welsh Powell y obtener el coloreo
 \item ordenar el grafo con los órdenes elegidos al azar y obtener el coloreo con cada uno
 
@@ -232,16 +212,20 @@ colores del grafo.
 \subsection{u32}
 El tipo de datos \textbf{u32} se usa alrededor de todo el programa. 
 Para hacer su uso fácil, es definido en el archivo \texttt{apifiles/typedefs.h}
-e incluído donde sea necesario. Es un alias al tipo de datos \textbf{uint32\_t}
+e incluído donde sea necesario. Es un alias al tipo de datos \texttt{uint32\_t}
 incluído de la biblioteca estándar de C \texttt{<stdint.h>}.
 
 \subsection{VerticeSt}
 Está definido en el archivo \texttt{apifiles/Cthulhu.h}. Contiene información
 básica de un vértice. Lo que \textbf{no} contiene es información de otros vértices,
-por más que en el grafo estén relacionados. Incluye el nombre real del grafo,
+por más que en el grafo estén relacionados.
+
+Incluye el nombre real del vértice,
 el cual es leído de lo que el usuario suministra al ejecutar el programa, su grado,
 el cual se incrementa a medida que se agregan vecinos nuevos, y su color, usado
-para ordenar el grafo. La estructura de este tipo es pública para que se puedan
+para ordenar el grafo. 
+
+La estructura de este tipo es pública para que se puedan
 crear o manipular vértices en el archivo \texttt{dirmain/mainJAlegre.c}.
 
 \subsection{NimheSt - NimheP}
@@ -256,8 +240,8 @@ grafo, como:
 \item un arreglo con todos los vértices cargados
 \item un arreglo con la posición de los vértices en orden
 \item un arreglo de la estructura de vecinos para cada uno de los vértices
-(el elemento en la posición i de este arreglo corresponde con el vértice en
-la posición i del arreglo de vértices)
+\emph{(el elemento en la posición \textbf{i} de este arreglo corresponde con el vértice en
+la posición \textbf{i} del arreglo de vértices)}
 \item la cantidad de colores usados para colorearlo
 \item un arreglo donde la posición indica el color y su valor, la cantidad de
 vértices coloreados con ese color.
@@ -268,9 +252,12 @@ Es una estructura definida dentro de \texttt{apifiles/Cthulhu.c} ya que las
 funciones que manipulan esta estructura necesitan conocer la estructura del
 grafo. Su único objetivo es reunir dos arreglos en una sola estructura. Es usado
 para representar a los vecinos de los vértices. Su relación con los vértices es
-la posición en el arreglo (i.e., un vértice en la posición i tiene a sus vecinos
-en el arreglo de vecinos en la misma posición). El arreglo \texttt{neighbours}
+la posición en el arreglo (i.e., un vértice en la posición \textbf{i} tiene a sus vecinos
+en el arreglo de vecinos en la misma posición).
+
+El arreglo \texttt{neighbours}
 contiene la posición de cada uno de los vértices vecinos del vértice en cuestión.
+
 El arreglo \texttt{colors} es un \emph{bool vector} usado para colorear al vértice.
 En este arreglo, la posición $i$ corresponde con el color $i+1$.
 
@@ -278,15 +265,17 @@ Las funciones implementadas para manipular este tipo son:
 \begin{itemize}
 \item \texttt{neighbours\_t neighbours\_empty()}
 
-Crea la estructura usada por este tipo de datos.
+Crea la estructura usada por este tipo de datos. Devuelve un puntero a la estructura.
 
 \item \texttt{neighbours\_t neighbours\_init(neighbours\_t neighbours, u32 size)}
 
-Recibe el grado del vértice. Crea el arreglo \texttt{colors}.
+Crea el arreglo \texttt{colors}. 
+Recibe un puntero a la estructura y un \textbf{u32} indicando la cantidad de vecinos del vértice. Devuelve
+un puntero a la estructura.
 
 \item \texttt{neighbours\_t neighbours\_destroy(neighbours\_t neighbours)}
 
-Libera toda la memoria usada por la estructura.
+Libera toda la memoria usada por la estructura. Recibe un puntero a la estructura. Devuelve \texttt{NULL}.
 
 \item \texttt{u32 neighbours\_i(neighbours\_t neighbours, u32 i)}
 
@@ -295,14 +284,16 @@ iésimo vecino del vértice.
 
 \item \texttt{neighbours\_t neighbours\_append(neighbours\_t neighbours, u32 index)}
 
-Agrega la posición de un vecino nuevo del vértice.
+Agrega la posición de un vecino nuevo del vértice. 
+Recibe un puntero a la estructura y un \textbf{u32} indicando la posición de un vecino nuevo del vértice.
+Devuelve un puntero a la estrucutra.
 
 \item \texttt{u32 neighbours\_find\_hole(neighbours\_t neighbours, u32 grado)}
 
-Devuelve el color más chico no usado por los vecinos de un vértice. Se supone
+Recibe un puntero a la estructura. Devuelve el color más chico no usado por los vecinos de un vértice. Se supone
 que se llama a \texttt{neighbours\_update()} antes de correr esta función.
 Recorre el arreglo \texttt{colors} y devuelve la posición del primer
-\texttt{false} $+ 1$.
+\texttt{false} $+1$.
 
 \item \texttt{neighbours\_t neighbours\_update(NimheP G, u32 vertex)}
 
@@ -311,17 +302,19 @@ los vecinos del vértice, es decir marca con \texttt{true} a la celda en la
 posición \emph{color del vecino - 1}. Solo tiene en cuenta colores menores al
 grado del vértice y distintos de 0 (vértices coloreados), el resto no importan.
 \end{itemize}
-
-\subsection{rb\_tree\_t}
-
-
-\subsection{u32queue\_t}
-
-
 \clearpage
 
 \section{Decisiones de diseño}
-hablar de rand y de realloc
+\subsection{\texttt{rand()} y \texttt{srand()}}
+Para obtener números aleatorios, se llama a la función \texttt{rand()} de la librería estandar de C. Como semilla se usa
+$(\#lados(grafo) * \#vértices(grafo)) + nombre(2ºvértice)$.
+
+\subsection{\texttt{realloc()} para agregar vecinos}
+Para agregar los vecinos de un vértice, llamamos a la función \texttt{neighbours\_append()}. Al no saber la cantidad de vecinos que tendrá
+un vértice a la hora de crearlo, no se puede saber el tamaño del arreglo de los vecinos del vértice, entonces se usa un factor constante para ir
+agrandando su tamaño en \emph{runtime}, si al agregar un vecino nuevo, el arreglo ya tiene todas sus posiciones ocupadas. Esta constante, definida en
+\texttt{apifiles/Cthulhu.c} vale 8. Esto desperdicia memoria pero mejora el rendimiento del programa. A medida que este factor crece, se gana velocidad
+pero se pierde eficiencia espacial.
 \clearpage
 
 \section{Respuestas a preguntas particulares}
@@ -421,9 +414,5 @@ coloreados y revisar solo los vecinos de cada vértice ya coloreados costaría m
 \subsection{¿Cómo estan implementados los órdenes Revierte, ChicoGrande y GrandeChico?}
 Estos 3 órdenes están implementados de la misma manera, usando la función \texttt{qsort()}. Lo único que
 tienen de distinto es que la función de comparación usada para cada uno es diferente.
-\clearpage
-
-\section{Benchmarks}
-\clearpage
 
 \end{document}  

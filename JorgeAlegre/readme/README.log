@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.7.28)  2 JUN 2016 14:52
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.7.28)  8 JUN 2016 13:22
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -580,72 +580,78 @@ File: lstlang1.sty 2013/08/26 1.5b listings language file
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 105.
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 111.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 110.
  [5
 
 ]
-[6] [7] [8] [9
+[6] [7] [8
 
-] [10] [11
+] [9]
 
-]
-(/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
+LaTeX Warning: Command \' invalid in math mode on input line 310.
+
+
+LaTeX Warning: Command \textordmasculine invalid in math mode on input line 310
+.
+
+
+LaTeX Warning: Command \' invalid in math mode on input line 310.
+
+[10
+
+] (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2013/08/26 1.5b listings language file
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2013/08/26 1.5b (Carsten Heinz)
 )
-Overfull \hbox (42.49564pt too wide) in paragraph at lines 373--376
+Overfull \hbox (42.49564pt too wide) in paragraph at lines 366--369
 []\T1/lmr/m/n/10.95 Primero, le qui-ta el co-lor a to-dos los vér-ti-ces. Es-to
  es ne-ce-sa-rio pa-ra que \T1/lmtt/m/n/10.95 neighbours_update()
  []
 
 
-Overfull \hbox (22.11723pt too wide) in paragraph at lines 373--376
+Overfull \hbox (22.11723pt too wide) in paragraph at lines 366--369
 \T1/lmr/m/n/10.95 no ten-ga en cuen-ta co-lo-res de co-rri-das vie-jas. Tam-bié
 n lim-pia-mos el arre-glo \T1/lmtt/m/n/10.95 nvertices_color\T1/lmr/m/n/10.95 ,
 
  []
 
-[12
+[11
 
 ]
-Overfull \hbox (1.05293pt too wide) in paragraph at lines 422--424
+Overfull \hbox (1.05293pt too wide) in paragraph at lines 415--417
 []\T1/lmr/m/n/10.95 Estos 3 ór-de-nes es-tán im-ple-men-ta-dos de la mis-ma ma-
 ne-ra, usan-do la fun-ción \T1/lmtt/m/n/10.95 qsort()\T1/lmr/m/n/10.95 .
  []
 
-[13] [14] [15
-
-] [16
-
-] (./README.aux
+[12] [13] (./README.aux
 LaTeX Info: Redefining \. on input line 6.
 LaTeX Info: Redefining \% on input line 6.
 ) ) 
 Here is how much of TeX's memory you used:
- 5381 strings out of 493304
- 71054 string characters out of 6139871
- 178194 words of memory out of 5000000
- 8735 multiletter control sequences out of 15000+600000
- 50186 words of font info for 49 fonts, out of 8000000 for 9000
+ 5377 strings out of 493304
+ 71008 string characters out of 6139871
+ 177194 words of memory out of 5000000
+ 8730 multiletter control sequences out of 15000+600000
+ 54457 words of font info for 50 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  38i,6n,56p,311b,1075s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/e
 nc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/shar
 e/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}</usr/share/texmf/fonts/type1/public/l
 m/lmbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/tex
-mf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmm
-i12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fon
-ts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr17.pfb>
-</usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/
-public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/s
-hare/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/publi
-c/lm/lmtt10.pfb>
-Output written on README.pdf (16 pages, 266656 bytes).
+mf/fonts/type1/public/lm/lmbxi10.pfb></usr/share/texmf/fonts/type1/public/lm/lm
+mi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi12.pfb></usr/share/texmf/f
+onts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pf
+b></usr/share/texmf/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf/fonts/typ
+e1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/
+share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/publ
+ic/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb>
+Output written on README.pdf (13 pages, 279687 bytes).
 PDF statistics:
- 114 PDF objects out of 1000 (max. 8388607)
- 83 compressed objects within 1 object stream
+ 109 PDF objects out of 1000 (max. 8388607)
+ 80 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

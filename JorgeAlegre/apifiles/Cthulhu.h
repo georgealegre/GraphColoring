@@ -1,16 +1,11 @@
 // Autores:
 // Alegre, Jorge Facundo <facu.alegre@gmail.com>
+
 #ifndef CTHULHU_H
 #define CTHULHU_H
 
 #include "typedefs.h"
 
-#define ORDENNATURAL 17
-#define WELSHPOWELL 16
-#define REORDENALEATORIORESTRINGIDO 15
-#define GRANDECHICO 14
-#define CHICOGRANDE 7
-#define REVIERTE 12
 
 typedef struct _neighbours_t *neighbours_t;
 typedef struct NimheSt *NimheP;

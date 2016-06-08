@@ -1,11 +1,12 @@
+// Autores:
+// Alegre, Jorge Facundo <facu.alegre@gmail.com>
+
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
-
-#include <time.h>
 
 #include "helpers.h"
 #include "u32queue.h"
@@ -14,24 +15,26 @@
 
 #define FACTOR_REALLOC 8
 
+// Para acceder al grafo en las funciones de comparación.
 static NimheP grafo = NULL;
 
 struct _neighbours_t {
     bool* colors;       /* Arreglo de tamaño del total de vecinos.
-                         * La posición indica el color. El valor indica si el color está usado. */
+                         * posición + 1 = color. 
+                         * El valor indica si el color está usado. */
     u32* neighbours;    // Arreglo de vecinos.
     u32 size;           // Cantidad de vecinos.
-    u32 asize;
+    u32 asize;          // Espacio disponible para agregar vecinos.
 };
 
 struct NimheSt{
-    u32 nvertices; // Número de vertices en el grafo.
-    u32 nlados; // Número de lados en el grafo.
-    u32 ncolores; // Número de colores usados hasta el momento para el coloreo propio.
-    u32* orden; // String del orden del grafo.
-    u32* orden_natural;
-    u32 delta_grande;
-    u32* nvertices_color;   // El valor en la posición "i" = # de vértices de color "i".
+    u32 nvertices;          // Número de vertices en el grafo.
+    u32 nlados;             // Número de lados en el grafo.
+    u32 ncolores;           // Número de colores usados hasta el momento.
+    u32* orden;             // Orden actual del grafo.
+    u32* orden_natural;     // Orden natural del grafo.
+    u32 delta_grande;       // Delta grande del grafo.
+    u32* nvertices_color;   // El valor en la pos. "i" = #vértices de color "i".
     VerticeSt* vertices;    // Arreglo de vértices en orden original.
     neighbours_t* vecinos;  // Arreglo de listas de vecinos de vértices.
 };
@@ -46,6 +49,7 @@ neighbours_t neighbours_empty() {
 }
 
 neighbours_t neighbours_init(neighbours_t neighbours, u32 size) {
+    // Una vez que se cuántos vecinos tengo, crear arreglo con tamaño fijo.
     neighbours->colors = calloc(size, sizeof(bool));
     assert(neighbours->colors != NULL);
 
@@ -59,13 +63,11 @@ neighbours_t neighbours_destroy(neighbours_t neighbours) {
             free(neighbours->neighbours);
             neighbours->neighbours = NULL;
         }
-	   
-	   // Eliminamos bool vector.
+	    // Eliminamos bool vector.
         if (neighbours->colors != NULL) {
             free(neighbours->colors);
             neighbours->colors = NULL;
         }
-        
         // Eliminamos estructura completa.
         free(neighbours);
         neighbours = NULL;
@@ -80,9 +82,11 @@ u32 neighbours_i(neighbours_t neighbours, u32 i) {
 
 neighbours_t neighbours_append(neighbours_t neighbours, u32 index) {
     if (neighbours->asize > neighbours->size) {
+        // Tengo espacio para un vecino más.
         neighbours->neighbours[neighbours->size] = index;
         neighbours->size++;
     } else {
+        // Pedir más memoria.
         neighbours->asize += FACTOR_REALLOC;
         neighbours->neighbours = realloc(neighbours->neighbours,
                 (neighbours->asize)*sizeof(u32));
@@ -94,13 +98,13 @@ neighbours_t neighbours_append(neighbours_t neighbours, u32 index) {
 }
 
 u32 neighbours_find_hole(neighbours_t neighbours, u32 grado) {
-    u32 i = 0; // Iterador de vecinos.
-
     /* Índice 0 indica color 1, índice 1 indica color 2, ...,
      * índice (size - 1) indica color "size". */
 
-    for (i = 0; i < grado; i++) {
+    for (u32 i = 0; i < grado; i++) {
+        // i es iterador de vértices.
         if (!neighbours->colors[i])
+            // Si el color no esta usado, devuelvo el color.
             return (i + 1);
     }
 
@@ -109,15 +113,17 @@ u32 neighbours_find_hole(neighbours_t neighbours, u32 grado) {
 }
 
 neighbours_t neighbours_update(NimheP G, u32 vertex) {
-    u32 i = 0;
     u32 color_vecino = 0;
 
-    memset(G->vecinos[vertex]->colors, 0, (G->vertices[vertex].grado)*sizeof(bool));
+    // Limpiar información vieja.
+    memset(G->vecinos[vertex]->colors, 0,
+           (G->vertices[vertex].grado)*sizeof(bool));
 
-    for (i = 0; i < G->vertices[vertex].grado; i++) {
+    for (u32 i = 0; i < G->vertices[vertex].grado; i++) {
+        // i es iterador de vértices.
         color_vecino = G->vertices[neighbours_i(G->vecinos[vertex], i)].color;
         if (color_vecino && color_vecino <= G->vertices[vertex].grado) {
-            // En palabras: si el color del vÃ©rtice vecino "i" de "vertex"
+            // En palabras: si el color del iesimo vecino de "vertex"
             // es menor al grado de "vertex" y es mayor que 0, marcar el color
             // como usado.
             G->vecinos[vertex]->colors[color_vecino - 1] = true;
