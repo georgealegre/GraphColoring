@@ -57,7 +57,7 @@ tomadas a lo largo de su desarrollo.
 Además, puede encontrar respuestas a preguntas comunes que podrían surgir.
 Por último, contendrá estadísticas de su comportamiento al ser ejecutado con distintos grafos de entrada.
 
-El programa recibe un grafo en formato DIMACS (con algunas modificaciones TODO: agregar referencia). Después
+El programa recibe un grafo en formato DIMACS (con algunas modificaciones). Después
 de verificar que el formato de entrada se respete, el programa procede a verificar que $\chi(grafo)\neq2$. Si
 es así, se crean 10 órdenes aleatorios para los vértices del grafo y se corre el algoritmo Greedy
 sucesivamente. Luego, se ordena el grafo de forma decreciente con respecto al grado de cada vértice (orden
@@ -326,7 +326,7 @@ es un vértice existente y se quiere aclarar que tiene como vecino al vértice q
 Dado que los vértices pueden ser cualquier número entre 0 y $2^{32}-1$, resolver este problema no es trivial
 si se desea velocidad alta y uso de memoria bajo para cargar el grafo.
 
-El método usado en esta implementación es usar árboles Rojo-Negro (TODO: referencia). Con esta estructura
+El método usado en esta implementación es usar árboles Rojo-Negro. Con esta estructura
 de datos, podemos lograr una eficiencia de espacio de $\mathcal{O}(n)$, siendo \emph{n} la cantidad de
 vértices en el grafo. Las operaciones sobre el árbol usadas por el programa son las de insertar elementos
 nuevos y buscar elementos, ambas con complejidad de tiempo de $\mathcal{O}(\ln{n})$.
