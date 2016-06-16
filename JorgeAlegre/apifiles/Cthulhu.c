@@ -581,7 +581,7 @@ VerticeSt IesimoVecino(NimheP G, VerticeSt x, u32 i) {
  *                                                         *
  ***********************************************************/
 
-bool coloreo_es_propio(NimheP G) {
+int coloreo_es_propio(NimheP G) {
     u32 color_v = 0; // Para guardar el color de cada vértice.
 
     for (u32 i = 0; i < G->nvertices; i++) {
@@ -589,12 +589,12 @@ bool coloreo_es_propio(NimheP G) {
         color_v = G->vertices[i].color;
         for (u32 j = 0; j < G->vertices[i].grado; j++)
             // j es iterador de vecinos.
-            if (color_v != G->vertices[neighbours_i(G->vecinos[i], j)].color)
+            if (color_v == G->vertices[neighbours_i(G->vecinos[i], j)].color)
                 // Si tienen el mismo color, no es propio.
-                return (false);
+                return (0);
     }
 
-    return (true);
+    return (1);
 }
 
 int Chidos(NimheP G) {
