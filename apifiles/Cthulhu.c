@@ -41,7 +41,9 @@ struct NimheSt{
     neighbours_t* vecinos;  // Arreglo de listas de vecinos de vértices.
 };
 
-neighbours_t neighbours_empty() {
+inline neighbours_t
+neighbours_empty()
+{
     neighbours_t neighbours = NULL;
 
     neighbours = calloc(1, sizeof(struct _neighbours_t));
@@ -50,7 +52,9 @@ neighbours_t neighbours_empty() {
     return (neighbours);
 }
 
-neighbours_t neighbours_init(neighbours_t neighbours, u32 size) {
+inline neighbours_t
+neighbours_init(neighbours_t neighbours, u32 size)
+{
     // Una vez que sé cuántos vecinos tengo, crear arreglo con tamaño fijo.
     neighbours->colors = calloc(size, sizeof(bool));
     assert(neighbours->colors != NULL);
@@ -58,7 +62,9 @@ neighbours_t neighbours_init(neighbours_t neighbours, u32 size) {
     return (neighbours);
 }
 
-neighbours_t neighbours_destroy(neighbours_t neighbours) {
+inline neighbours_t
+neighbours_destroy(neighbours_t neighbours)
+{
     if (neighbours != NULL) {
         //Eliminamos el arreglo de vecinos.
         if (neighbours->neighbours != NULL) {
@@ -78,12 +84,16 @@ neighbours_t neighbours_destroy(neighbours_t neighbours) {
     return (NULL);
 }
 
-u32 neighbours_i(neighbours_t neighbours, u32 i) {
+inline u32
+neighbours_i(neighbours_t neighbours, u32 i)
+{
     // Devuelve la posición del iesimo vecino.
     return (neighbours->neighbours[i]);
 }
 
-neighbours_t neighbours_append(neighbours_t neighbours, u32 index) {
+inline neighbours_t
+neighbours_append(neighbours_t neighbours, u32 index)
+{
     if (neighbours->asize > neighbours->size) {
         // Tengo espacio para un vecino más.
         neighbours->neighbours[neighbours->size] = index;
@@ -101,7 +111,9 @@ neighbours_t neighbours_append(neighbours_t neighbours, u32 index) {
     return (neighbours);
 }
 
-u32 neighbours_find_hole(neighbours_t neighbours, u32 grado) {
+inline u32
+neighbours_find_hole(neighbours_t neighbours, u32 grado)
+{
     /* Índice 0 indica color 1, índice 1 indica color 2, ...,
      * índice (grado - 1) indica color "grado". */
 
@@ -116,7 +128,9 @@ u32 neighbours_find_hole(neighbours_t neighbours, u32 grado) {
     return (grado + 1);
 }
 
-neighbours_t neighbours_update(NimheP G, u32 vertex) {
+inline neighbours_t
+neighbours_update(NimheP G, u32 vertex)
+{
     u32 color_vecino = 0;
 
     // Limpiar información vieja.
@@ -177,19 +191,23 @@ void ImprimirVecinosDelVertice(VerticeSt x, NimheP G) {
     }
 }
 
-u32 max(u32 a, u32 b) {
+inline u32
+max(u32 a, u32 b)
+{
     if (a <= b) return b;
     else return a;
 }
 
-NimheP agregar_vertices(NimheP G,
+NimheP
+agregar_vertices(NimheP G,
                         u32 lvertice,
                         bool existel,
                         u32 pos_lv,
                         u32 rvertice,
                         bool exister,
                         u32 pos_rv,
-                        u32* pos_v_nuevo) {
+                        u32* pos_v_nuevo)
+{
     if (!existel && !exister) {
         // Ambos vértices son nuevos.
 
@@ -587,11 +605,12 @@ int coloreo_es_propio(NimheP G) {
     for (u32 i = 0; i < G->nvertices; i++) {
         // i es iterador de vértices.
         color_v = G->vertices[i].color;
-        for (u32 j = 0; j < G->vertices[i].grado; j++)
+        for (u32 j = 0; j < G->vertices[i].grado; j++) {
             // j es iterador de vecinos.
             if (color_v == G->vertices[neighbours_i(G->vecinos[i], j)].color)
                 // Si tienen el mismo color, no es propio.
                 return (0);
+        }
     }
 
     return (1);
@@ -609,7 +628,7 @@ int Chidos(NimheP G) {
     while (nvertices_coloreados < G->nvertices) {
         // Buscar primer vértice no coloreado.
         i = 0;
-        while (G->vertices[i].color != 0 && i < G->nvertices) {
+        while (G->vertices[i].color != 0) {
             i++;
         }
 

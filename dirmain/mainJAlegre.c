@@ -147,6 +147,7 @@ int main() {
 
         // Correr Greedy sobre orden.
         ncromatico = Greedy(grafo);
+        printf("%d. Greedy: %u\n", i + 1, ncromatico);
         min_ncromatico = min(min_ncromatico, ncromatico);
     }
     // Correr Greedy 1 vez con orden Revierte.
