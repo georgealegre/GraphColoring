@@ -1,0 +1,1190 @@
+graphs/Gf12345_12111222_457_15
+Grafo No Bipartito
+coloreo aleatorio numero 1: 587 colores
+coloreo aleatorio numero 2: 602 colores
+coloreo aleatorio numero 3: 599 colores
+coloreo aleatorio numero 4: 588 colores
+coloreo aleatorio numero 5: 601 colores
+coloreo aleatorio numero 6: 593 colores
+coloreo aleatorio numero 7: 597 colores
+coloreo aleatorio numero 8: 598 colores
+coloreo aleatorio numero 9: 598 colores
+coloreo aleatorio numero 10: 597 colores
+
+ coloreo con Greedy en WelshPowell: 582 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 522 colores
+(493 CG,126 GC,319 R,63 RAR)
+      125.73 real       116.39 user         2.16 sys
+ 180944896  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+     75162  page reclaims
+         1  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         3  voluntary context switches
+    288627  involuntary context switches
+-------------------------
+graphs/KC
+Grafo No Bipartito
+coloreo aleatorio numero 1: 100 colores
+coloreo aleatorio numero 2: 100 colores
+coloreo aleatorio numero 3: 100 colores
+coloreo aleatorio numero 4: 100 colores
+coloreo aleatorio numero 5: 100 colores
+coloreo aleatorio numero 6: 100 colores
+coloreo aleatorio numero 7: 100 colores
+coloreo aleatorio numero 8: 100 colores
+coloreo aleatorio numero 9: 100 colores
+coloreo aleatorio numero 10: 100 colores
+
+ coloreo con Greedy en WelshPowell: 100 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 100 colores
+(501 CG,122 GC,317 R,61 RAR)
+        0.05 real         0.03 user         0.00 sys
+    815104  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       213  page reclaims
+         2  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+        34  involuntary context switches
+-------------------------
+graphs/KD
+Grafo No Bipartito
+coloreo aleatorio numero 1: 500 colores
+coloreo aleatorio numero 2: 500 colores
+coloreo aleatorio numero 3: 500 colores
+coloreo aleatorio numero 4: 500 colores
+coloreo aleatorio numero 5: 500 colores
+coloreo aleatorio numero 6: 500 colores
+coloreo aleatorio numero 7: 500 colores
+coloreo aleatorio numero 8: 500 colores
+coloreo aleatorio numero 9: 500 colores
+coloreo aleatorio numero 10: 500 colores
+
+ coloreo con Greedy en WelshPowell: 500 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 500 colores
+(489 CG,133 GC,321 R,58 RAR)
+        0.77 real         0.74 user         0.01 sys
+   2576384  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       645  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+      2389  involuntary context switches
+-------------------------
+graphs/KM
+Grafo No Bipartito
+coloreo aleatorio numero 1: 1000 colores
+coloreo aleatorio numero 2: 1000 colores
+coloreo aleatorio numero 3: 1000 colores
+coloreo aleatorio numero 4: 1000 colores
+coloreo aleatorio numero 5: 1000 colores
+coloreo aleatorio numero 6: 1000 colores
+coloreo aleatorio numero 7: 1000 colores
+coloreo aleatorio numero 8: 1000 colores
+coloreo aleatorio numero 9: 1000 colores
+coloreo aleatorio numero 10: 1000 colores
+
+ coloreo con Greedy en WelshPowell: 1000 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 1000 colores
+(486 CG,134 GC,323 R,58 RAR)
+        2.74 real         2.63 user         0.04 sys
+   8687616  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+      2137  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+      6117  involuntary context switches
+-------------------------
+graphs/R1789_875431_10
+Grafo No Bipartito
+coloreo aleatorio numero 1: 587 colores
+coloreo aleatorio numero 2: 587 colores
+coloreo aleatorio numero 3: 587 colores
+coloreo aleatorio numero 4: 587 colores
+coloreo aleatorio numero 5: 587 colores
+coloreo aleatorio numero 6: 587 colores
+coloreo aleatorio numero 7: 587 colores
+coloreo aleatorio numero 8: 587 colores
+coloreo aleatorio numero 9: 587 colores
+coloreo aleatorio numero 10: 587 colores
+
+ coloreo con Greedy en WelshPowell: 587 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 587 colores
+(525 CG,129 GC,290 R,57 RAR)
+        3.93 real         3.81 user         0.06 sys
+  15618048  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+      3829  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+      5347  involuntary context switches
+-------------------------
+graphs/R1999999_10123123_1
+Grafo No Bipartito
+coloreo aleatorio numero 1: 7 colores
+coloreo aleatorio numero 2: 7 colores
+coloreo aleatorio numero 3: 7 colores
+coloreo aleatorio numero 4: 7 colores
+coloreo aleatorio numero 5: 7 colores
+coloreo aleatorio numero 6: 7 colores
+coloreo aleatorio numero 7: 7 colores
+coloreo aleatorio numero 8: 7 colores
+coloreo aleatorio numero 9: 7 colores
+coloreo aleatorio numero 10: 7 colores
+
+ coloreo con Greedy en WelshPowell: 7 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 7 colores
+(512 CG,124 GC,303 R,62 RAR)
+     1017.99 real       982.87 user         7.73 sys
+ 400736256  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+    225182  page reclaims
+         2  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         3  voluntary context switches
+   1072950  involuntary context switches
+-------------------------
+graphs/R22_99_15
+Grafo No Bipartito
+coloreo aleatorio numero 1: 7 colores
+coloreo aleatorio numero 2: 8 colores
+coloreo aleatorio numero 3: 8 colores
+coloreo aleatorio numero 4: 8 colores
+coloreo aleatorio numero 5: 8 colores
+coloreo aleatorio numero 6: 8 colores
+coloreo aleatorio numero 7: 8 colores
+coloreo aleatorio numero 8: 8 colores
+coloreo aleatorio numero 9: 8 colores
+coloreo aleatorio numero 10: 8 colores
+
+ coloreo con Greedy en WelshPowell: 7 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 7 colores
+(452 CG,124 GC,348 R,77 RAR)
+        0.03 real         0.00 user         0.00 sys
+    716800  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       189  page reclaims
+         2  page faults
+         0  swaps
+         1  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+         5  involuntary context switches
+-------------------------
+graphs/anna.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 11 colores
+coloreo aleatorio numero 2: 11 colores
+coloreo aleatorio numero 3: 11 colores
+coloreo aleatorio numero 4: 12 colores
+coloreo aleatorio numero 5: 11 colores
+coloreo aleatorio numero 6: 11 colores
+coloreo aleatorio numero 7: 11 colores
+coloreo aleatorio numero 8: 11 colores
+coloreo aleatorio numero 9: 11 colores
+coloreo aleatorio numero 10: 11 colores
+
+ coloreo con Greedy en WelshPowell: 11 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 11 colores
+(478 CG,125 GC,334 R,64 RAR)
+        0.03 real         0.02 user         0.00 sys
+    761856  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       202  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+       189  involuntary context switches
+-------------------------
+graphs/bxb15_22_10
+Grafo No Bipartito
+coloreo aleatorio numero 1: 5 colores
+coloreo aleatorio numero 2: 5 colores
+coloreo aleatorio numero 3: 5 colores
+coloreo aleatorio numero 4: 5 colores
+coloreo aleatorio numero 5: 5 colores
+coloreo aleatorio numero 6: 6 colores
+coloreo aleatorio numero 7: 5 colores
+coloreo aleatorio numero 8: 5 colores
+coloreo aleatorio numero 9: 5 colores
+coloreo aleatorio numero 10: 5 colores
+
+ coloreo con Greedy en WelshPowell: 37 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 4 colores
+(476 CG,134 GC,318 R,73 RAR)
+        0.06 real         0.04 user         0.00 sys
+    929792  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       243  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+       310  involuntary context switches
+-------------------------
+graphs/bxb777_999_12
+Grafo No Bipartito
+coloreo aleatorio numero 1: 5 colores
+coloreo aleatorio numero 2: 5 colores
+coloreo aleatorio numero 3: 5 colores
+coloreo aleatorio numero 4: 5 colores
+coloreo aleatorio numero 5: 5 colores
+coloreo aleatorio numero 6: 5 colores
+coloreo aleatorio numero 7: 5 colores
+coloreo aleatorio numero 8: 5 colores
+coloreo aleatorio numero 9: 5 colores
+coloreo aleatorio numero 10: 5 colores
+
+ coloreo con Greedy en WelshPowell: 1776 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 4 colores
+(512 CG,117 GC,322 R,50 RAR)
+      836.35 real       800.70 user         6.04 sys
+ 332386304  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+    320972  page reclaims
+         0  page faults
+         0  swaps
+         1  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         4  voluntary context switches
+    683907  involuntary context switches
+-------------------------
+graphs/david.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 11 colores
+coloreo aleatorio numero 2: 12 colores
+coloreo aleatorio numero 3: 12 colores
+coloreo aleatorio numero 4: 12 colores
+coloreo aleatorio numero 5: 12 colores
+coloreo aleatorio numero 6: 12 colores
+coloreo aleatorio numero 7: 12 colores
+coloreo aleatorio numero 8: 12 colores
+coloreo aleatorio numero 9: 13 colores
+coloreo aleatorio numero 10: 11 colores
+
+ coloreo con Greedy en WelshPowell: 11 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 11 colores
+(510 CG,133 GC,289 R,69 RAR)
+        0.04 real         0.01 user         0.00 sys
+    757760  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       199  page reclaims
+         2  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+        67  involuntary context switches
+-------------------------
+graphs/fpsol2.i.1.colcorregido
+Grafo No Bipartito
+coloreo aleatorio numero 1: 65 colores
+coloreo aleatorio numero 2: 65 colores
+coloreo aleatorio numero 3: 65 colores
+coloreo aleatorio numero 4: 65 colores
+coloreo aleatorio numero 5: 65 colores
+coloreo aleatorio numero 6: 65 colores
+coloreo aleatorio numero 7: 65 colores
+coloreo aleatorio numero 8: 65 colores
+coloreo aleatorio numero 9: 65 colores
+coloreo aleatorio numero 10: 65 colores
+
+ coloreo con Greedy en WelshPowell: 65 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 65 colores
+(510 CG,120 GC,314 R,57 RAR)
+        0.13 real         0.11 user         0.00 sys
+    917504  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       240  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+       268  involuntary context switches
+-------------------------
+graphs/fpsol2.i.2.colcorregido
+Grafo No Bipartito
+coloreo aleatorio numero 1: 31 colores
+coloreo aleatorio numero 2: 30 colores
+coloreo aleatorio numero 3: 30 colores
+coloreo aleatorio numero 4: 30 colores
+coloreo aleatorio numero 5: 32 colores
+coloreo aleatorio numero 6: 30 colores
+coloreo aleatorio numero 7: 31 colores
+coloreo aleatorio numero 8: 31 colores
+coloreo aleatorio numero 9: 30 colores
+coloreo aleatorio numero 10: 30 colores
+
+ coloreo con Greedy en WelshPowell: 30 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 30 colores
+(500 CG,133 GC,313 R,55 RAR)
+        0.10 real         0.09 user         0.00 sys
+    942080  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       246  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+       548  involuntary context switches
+-------------------------
+graphs/fpsol2.i.3.colcorregido
+Grafo No Bipartito
+coloreo aleatorio numero 1: 30 colores
+coloreo aleatorio numero 2: 31 colores
+coloreo aleatorio numero 3: 30 colores
+coloreo aleatorio numero 4: 30 colores
+coloreo aleatorio numero 5: 30 colores
+coloreo aleatorio numero 6: 30 colores
+coloreo aleatorio numero 7: 31 colores
+coloreo aleatorio numero 8: 30 colores
+coloreo aleatorio numero 9: 30 colores
+coloreo aleatorio numero 10: 30 colores
+
+ coloreo con Greedy en WelshPowell: 30 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 30 colores
+(472 CG,109 GC,346 R,74 RAR)
+        0.10 real         0.09 user         0.00 sys
+    946176  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       247  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+       510  involuntary context switches
+-------------------------
+graphs/huck.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 11 colores
+coloreo aleatorio numero 2: 11 colores
+coloreo aleatorio numero 3: 11 colores
+coloreo aleatorio numero 4: 11 colores
+coloreo aleatorio numero 5: 11 colores
+coloreo aleatorio numero 6: 11 colores
+coloreo aleatorio numero 7: 11 colores
+coloreo aleatorio numero 8: 11 colores
+coloreo aleatorio numero 9: 11 colores
+coloreo aleatorio numero 10: 11 colores
+
+ coloreo con Greedy en WelshPowell: 11 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 11 colores
+(518 CG,116 GC,306 R,61 RAR)
+        0.01 real         0.01 user         0.00 sys
+    741376  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       197  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         1  voluntary context switches
+        85  involuntary context switches
+-------------------------
+graphs/inithx.i.1.colcorregido
+Grafo No Bipartito
+coloreo aleatorio numero 1: 54 colores
+coloreo aleatorio numero 2: 54 colores
+coloreo aleatorio numero 3: 54 colores
+coloreo aleatorio numero 4: 54 colores
+coloreo aleatorio numero 5: 54 colores
+coloreo aleatorio numero 6: 54 colores
+coloreo aleatorio numero 7: 54 colores
+coloreo aleatorio numero 8: 54 colores
+coloreo aleatorio numero 9: 54 colores
+coloreo aleatorio numero 10: 54 colores
+
+ coloreo con Greedy en WelshPowell: 54 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 54 colores
+(512 CG,136 GC,302 R,51 RAR)
+        0.19 real         0.17 user         0.00 sys
+   1085440  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       281  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+       505  involuntary context switches
+-------------------------
+graphs/inithx.i.2.colcorregido
+Grafo No Bipartito
+coloreo aleatorio numero 1: 31 colores
+coloreo aleatorio numero 2: 31 colores
+coloreo aleatorio numero 3: 31 colores
+coloreo aleatorio numero 4: 31 colores
+coloreo aleatorio numero 5: 32 colores
+coloreo aleatorio numero 6: 31 colores
+coloreo aleatorio numero 7: 31 colores
+coloreo aleatorio numero 8: 31 colores
+coloreo aleatorio numero 9: 31 colores
+coloreo aleatorio numero 10: 31 colores
+
+ coloreo con Greedy en WelshPowell: 31 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 31 colores
+(496 CG,136 GC,308 R,61 RAR)
+        0.14 real         0.13 user         0.00 sys
+    962560  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       251  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+        22  involuntary context switches
+-------------------------
+graphs/lux1
+Grafo No Bipartito
+coloreo aleatorio numero 1: 131 colores
+coloreo aleatorio numero 2: 131 colores
+coloreo aleatorio numero 3: 131 colores
+coloreo aleatorio numero 4: 131 colores
+coloreo aleatorio numero 5: 131 colores
+coloreo aleatorio numero 6: 131 colores
+coloreo aleatorio numero 7: 131 colores
+coloreo aleatorio numero 8: 131 colores
+coloreo aleatorio numero 9: 131 colores
+coloreo aleatorio numero 10: 131 colores
+
+ coloreo con Greedy en WelshPowell: 131 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 131 colores
+(467 CG,109 GC,360 R,65 RAR)
+        0.17 real         0.16 user         0.00 sys
+    942080  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       246  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+        45  involuntary context switches
+-------------------------
+graphs/lux2
+Grafo No Bipartito
+coloreo aleatorio numero 1: 25 colores
+coloreo aleatorio numero 2: 25 colores
+coloreo aleatorio numero 3: 25 colores
+coloreo aleatorio numero 4: 25 colores
+coloreo aleatorio numero 5: 25 colores
+coloreo aleatorio numero 6: 25 colores
+coloreo aleatorio numero 7: 25 colores
+coloreo aleatorio numero 8: 25 colores
+coloreo aleatorio numero 9: 25 colores
+coloreo aleatorio numero 10: 25 colores
+
+ coloreo con Greedy en WelshPowell: 25 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 25 colores
+(508 CG,145 GC,299 R,49 RAR)
+        0.01 real         0.00 user         0.00 sys
+    724992  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       193  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+         2  involuntary context switches
+-------------------------
+graphs/lux3
+Grafo No Bipartito
+coloreo aleatorio numero 1: 22 colores
+coloreo aleatorio numero 2: 22 colores
+coloreo aleatorio numero 3: 22 colores
+coloreo aleatorio numero 4: 22 colores
+coloreo aleatorio numero 5: 22 colores
+coloreo aleatorio numero 6: 22 colores
+coloreo aleatorio numero 7: 22 colores
+coloreo aleatorio numero 8: 22 colores
+coloreo aleatorio numero 9: 22 colores
+coloreo aleatorio numero 10: 22 colores
+
+ coloreo con Greedy en WelshPowell: 22 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 22 colores
+(496 CG,132 GC,321 R,52 RAR)
+        0.01 real         0.01 user         0.00 sys
+    708608  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       189  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+         3  involuntary context switches
+-------------------------
+graphs/lux4
+Grafo No Bipartito
+coloreo aleatorio numero 1: 1500 colores
+coloreo aleatorio numero 2: 1500 colores
+coloreo aleatorio numero 3: 1500 colores
+coloreo aleatorio numero 4: 1500 colores
+coloreo aleatorio numero 5: 1500 colores
+coloreo aleatorio numero 6: 1500 colores
+coloreo aleatorio numero 7: 1500 colores
+coloreo aleatorio numero 8: 1500 colores
+coloreo aleatorio numero 9: 1500 colores
+coloreo aleatorio numero 10: 1500 colores
+
+ coloreo con Greedy en WelshPowell: 1500 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 1500 colores
+(526 CG,122 GC,296 R,57 RAR)
+       12.01 real        11.85 user         0.09 sys
+  24522752  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+      6003  page reclaims
+         0  page faults
+         0  swaps
+         1  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         3  voluntary context switches
+      6549  involuntary context switches
+-------------------------
+graphs/miles1000.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 45 colores
+coloreo aleatorio numero 2: 43 colores
+coloreo aleatorio numero 3: 45 colores
+coloreo aleatorio numero 4: 46 colores
+coloreo aleatorio numero 5: 44 colores
+coloreo aleatorio numero 6: 45 colores
+coloreo aleatorio numero 7: 44 colores
+coloreo aleatorio numero 8: 45 colores
+coloreo aleatorio numero 9: 44 colores
+coloreo aleatorio numero 10: 45 colores
+
+ coloreo con Greedy en WelshPowell: 43 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 42 colores
+(505 CG,103 GC,329 R,64 RAR)
+        0.06 real         0.05 user         0.00 sys
+    798720  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       211  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+       103  involuntary context switches
+-------------------------
+graphs/miles1500.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 75 colores
+coloreo aleatorio numero 2: 75 colores
+coloreo aleatorio numero 3: 74 colores
+coloreo aleatorio numero 4: 75 colores
+coloreo aleatorio numero 5: 74 colores
+coloreo aleatorio numero 6: 75 colores
+coloreo aleatorio numero 7: 75 colores
+coloreo aleatorio numero 8: 74 colores
+coloreo aleatorio numero 9: 76 colores
+coloreo aleatorio numero 10: 75 colores
+
+ coloreo con Greedy en WelshPowell: 73 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 73 colores
+(505 CG,134 GC,319 R,43 RAR)
+        0.07 real         0.06 user         0.00 sys
+    811008  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       214  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+        97  involuntary context switches
+-------------------------
+graphs/myciel4.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 5 colores
+coloreo aleatorio numero 2: 5 colores
+coloreo aleatorio numero 3: 5 colores
+coloreo aleatorio numero 4: 5 colores
+coloreo aleatorio numero 5: 5 colores
+coloreo aleatorio numero 6: 5 colores
+coloreo aleatorio numero 7: 5 colores
+coloreo aleatorio numero 8: 5 colores
+coloreo aleatorio numero 9: 5 colores
+coloreo aleatorio numero 10: 5 colores
+
+ coloreo con Greedy en WelshPowell: 5 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 5 colores
+(509 CG,114 GC,306 R,72 RAR)
+        0.00 real         0.00 user         0.00 sys
+    712704  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       190  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         1  voluntary context switches
+        12  involuntary context switches
+-------------------------
+graphs/myciel5.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 6 colores
+coloreo aleatorio numero 2: 6 colores
+coloreo aleatorio numero 3: 6 colores
+coloreo aleatorio numero 4: 7 colores
+coloreo aleatorio numero 5: 6 colores
+coloreo aleatorio numero 6: 6 colores
+coloreo aleatorio numero 7: 6 colores
+coloreo aleatorio numero 8: 6 colores
+coloreo aleatorio numero 9: 6 colores
+coloreo aleatorio numero 10: 6 colores
+
+ coloreo con Greedy en WelshPowell: 6 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 6 colores
+(481 CG,145 GC,323 R,52 RAR)
+        0.01 real         0.00 user         0.00 sys
+    724992  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       193  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         1  voluntary context switches
+         4  involuntary context switches
+-------------------------
+graphs/myciel7.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 8 colores
+coloreo aleatorio numero 2: 8 colores
+coloreo aleatorio numero 3: 8 colores
+coloreo aleatorio numero 4: 8 colores
+coloreo aleatorio numero 5: 10 colores
+coloreo aleatorio numero 6: 10 colores
+coloreo aleatorio numero 7: 9 colores
+coloreo aleatorio numero 8: 8 colores
+coloreo aleatorio numero 9: 9 colores
+coloreo aleatorio numero 10: 9 colores
+
+ coloreo con Greedy en WelshPowell: 8 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 8 colores
+(506 CG,135 GC,295 R,65 RAR)
+        0.03 real         0.03 user         0.00 sys
+    774144  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       205  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+         6  involuntary context switches
+-------------------------
+graphs/q10.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 15 colores
+coloreo aleatorio numero 2: 15 colores
+coloreo aleatorio numero 3: 16 colores
+coloreo aleatorio numero 4: 15 colores
+coloreo aleatorio numero 5: 15 colores
+coloreo aleatorio numero 6: 16 colores
+coloreo aleatorio numero 7: 15 colores
+coloreo aleatorio numero 8: 15 colores
+coloreo aleatorio numero 9: 14 colores
+coloreo aleatorio numero 10: 17 colores
+
+ coloreo con Greedy en WelshPowell: 16 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 13 colores
+(519 CG,113 GC,290 R,79 RAR)
+        0.03 real         0.02 user         0.00 sys
+    737280  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       196  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+         4  involuntary context switches
+-------------------------
+graphs/q11.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 18 colores
+coloreo aleatorio numero 2: 18 colores
+coloreo aleatorio numero 3: 18 colores
+coloreo aleatorio numero 4: 17 colores
+coloreo aleatorio numero 5: 18 colores
+coloreo aleatorio numero 6: 17 colores
+coloreo aleatorio numero 7: 16 colores
+coloreo aleatorio numero 8: 17 colores
+coloreo aleatorio numero 9: 18 colores
+coloreo aleatorio numero 10: 17 colores
+
+ coloreo con Greedy en WelshPowell: 17 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 14 colores
+(503 CG,119 GC,327 R,52 RAR)
+        0.04 real         0.03 user         0.00 sys
+    757760  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       201  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+        22  involuntary context switches
+-------------------------
+graphs/q12.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 18 colores
+coloreo aleatorio numero 2: 18 colores
+coloreo aleatorio numero 3: 19 colores
+coloreo aleatorio numero 4: 18 colores
+coloreo aleatorio numero 5: 19 colores
+coloreo aleatorio numero 6: 18 colores
+coloreo aleatorio numero 7: 18 colores
+coloreo aleatorio numero 8: 19 colores
+coloreo aleatorio numero 9: 18 colores
+coloreo aleatorio numero 10: 17 colores
+
+ coloreo con Greedy en WelshPowell: 21 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 15 colores
+(476 CG,126 GC,337 R,62 RAR)
+        0.05 real         0.04 user         0.00 sys
+    790528  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       209  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+         9  involuntary context switches
+-------------------------
+graphs/q13.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 18 colores
+coloreo aleatorio numero 2: 19 colores
+coloreo aleatorio numero 3: 19 colores
+coloreo aleatorio numero 4: 19 colores
+coloreo aleatorio numero 5: 20 colores
+coloreo aleatorio numero 6: 19 colores
+coloreo aleatorio numero 7: 19 colores
+coloreo aleatorio numero 8: 19 colores
+coloreo aleatorio numero 9: 20 colores
+coloreo aleatorio numero 10: 19 colores
+
+ coloreo con Greedy en WelshPowell: 21 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 17 colores
+(502 CG,138 GC,306 R,55 RAR)
+        0.07 real         0.05 user         0.00 sys
+    782336  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       207  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+        83  involuntary context switches
+-------------------------
+graphs/q15.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 21 colores
+coloreo aleatorio numero 2: 22 colores
+coloreo aleatorio numero 3: 21 colores
+coloreo aleatorio numero 4: 22 colores
+coloreo aleatorio numero 5: 21 colores
+coloreo aleatorio numero 6: 22 colores
+coloreo aleatorio numero 7: 22 colores
+coloreo aleatorio numero 8: 23 colores
+coloreo aleatorio numero 9: 21 colores
+coloreo aleatorio numero 10: 21 colores
+
+ coloreo con Greedy en WelshPowell: 25 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 19 colores
+(501 CG,118 GC,334 R,48 RAR)
+        0.08 real         0.07 user         0.00 sys
+    786432  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       208  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+         9  involuntary context switches
+-------------------------
+graphs/q7.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 12 colores
+coloreo aleatorio numero 2: 10 colores
+coloreo aleatorio numero 3: 11 colores
+coloreo aleatorio numero 4: 12 colores
+coloreo aleatorio numero 5: 12 colores
+coloreo aleatorio numero 6: 10 colores
+coloreo aleatorio numero 7: 13 colores
+coloreo aleatorio numero 8: 11 colores
+coloreo aleatorio numero 9: 11 colores
+coloreo aleatorio numero 10: 11 colores
+
+ coloreo con Greedy en WelshPowell: 12 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 9 colores
+(484 CG,133 GC,322 R,62 RAR)
+        0.01 real         0.01 user         0.00 sys
+    712704  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       190  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+         3  involuntary context switches
+-------------------------
+graphs/q8_12.corr
+Grafo No Bipartito
+coloreo aleatorio numero 1: 15 colores
+coloreo aleatorio numero 2: 15 colores
+coloreo aleatorio numero 3: 15 colores
+coloreo aleatorio numero 4: 15 colores
+coloreo aleatorio numero 5: 15 colores
+coloreo aleatorio numero 6: 15 colores
+coloreo aleatorio numero 7: 15 colores
+coloreo aleatorio numero 8: 16 colores
+coloreo aleatorio numero 9: 15 colores
+coloreo aleatorio numero 10: 15 colores
+
+ coloreo con Greedy en WelshPowell: 17 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 13 colores
+(517 CG,107 GC,309 R,68 RAR)
+        0.03 real         0.02 user         0.00 sys
+    741376  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       197  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+         6  involuntary context switches
+-------------------------
+graphs/zeroin.i.1.colcorregido
+Grafo No Bipartito
+coloreo aleatorio numero 1: 49 colores
+coloreo aleatorio numero 2: 50 colores
+coloreo aleatorio numero 3: 49 colores
+coloreo aleatorio numero 4: 49 colores
+coloreo aleatorio numero 5: 49 colores
+coloreo aleatorio numero 6: 49 colores
+coloreo aleatorio numero 7: 49 colores
+coloreo aleatorio numero 8: 49 colores
+coloreo aleatorio numero 9: 49 colores
+coloreo aleatorio numero 10: 50 colores
+
+ coloreo con Greedy en WelshPowell: 49 colores
+
+====Comenzando Greedy Iterado 1001 veces====
+
+Mejor coloreo con Greedy iterado 1001 veces: 49 colores
+(525 CG,113 GC,302 R,61 RAR)
+        0.06 real         0.05 user         0.00 sys
+    794624  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       210  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+         2  voluntary context switches
+        10  involuntary context switches
+-------------------------
